@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>project</name>
+	<name>Project-git</name>
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>.project</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/.project</locationURI>
+		</link>
+		<link>
+			<name>project/.project</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/.project</locationURI>
+		</link>
+		<link>
+			<name>project/Board.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/Board.java</locationURI>
+		</link>
+		<link>
+			<name>project/ConnectFour.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/ConnectFour.java</locationURI>
+		</link>
+		<link>
+			<name>project/Game.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/Game.java</locationURI>
+		</link>
+		<link>
+			<name>project/HumanPlayer.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/HumanPlayer.java</locationURI>
+		</link>
+		<link>
+			<name>project/Mark.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/Mark.java</locationURI>
+		</link>
+		<link>
+			<name>project/OldBoard.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/OldBoard.java</locationURI>
+		</link>
+		<link>
+			<name>project/Player.java</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Users/Gebruiker/Documents/GitHub/ProjectGit/project/Player.java</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
