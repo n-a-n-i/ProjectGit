@@ -15,5 +15,9 @@ public class ConnectFour {
     	
         Game game = new Game(player1, player2);
         game.start();
+        
+        System.out.println("text");
      }
+
+
 }
