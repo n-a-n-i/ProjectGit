@@ -397,7 +397,7 @@ public class OldBoard {
     //@ ensures \result == this.hasRow(m) || this.hasColumn(m) | this.hasDiagonal(m);
     /*@ pure */
     public boolean isWinner(Mark m) {
-    	assert ( m == Mark.XX || m == Mark.OO);
+    	assert ( m == Mark.XXX || m == Mark.OOO);
     	
     	return hasRow(m) || hasColumn(m) || hasDiagonal(m) || hasStack(m);
     }
@@ -411,7 +411,7 @@ public class OldBoard {
     //@ ensures \result == isWinner(Mark.XX) | \result == isWinner(Mark.OO);
     /*@pure*/
     public boolean hasWinner() {
-    	return isWinner(Mark.XX) || isWinner(Mark.OO);
+    	return isWinner(Mark.XXX) || isWinner(Mark.OOO);
     }
 
 //    /**

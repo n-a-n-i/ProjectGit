@@ -4,6 +4,7 @@ public class Board {
 	
 	private Mark[][][] board;
 	public int DIM;
+	public int WIN = 4;
 	
 	public Board(int dimension) {
 		board = new Mark[dimension][dimension][dimension];
@@ -19,6 +20,33 @@ public class Board {
 	}
 	
 	public void showBoard(){
+		StringBuilder numbers = new StringBuilder();
+		for (int z = 0; z < DIM; z++){
+			numbers.append("  |");
+			for(int i = 0; i < DIM; i++){
+				if (i == DIM -1){
+					numbers.append("  " + i + " ");
+				} else{
+					numbers.append("  " + i + "  ");
+				}
+			}
+		}
+		String number = numbers.toString();
+		System.out.println(number);
+		
+		
+		for (int x = 0; x < DIM; x++){
+			System.out.printf("%d | ", x);
+			for (int z = 0; z < DIM; z++){
+				for (int y = 0; y < DIM; y++){
+					System.out.printf("%s  ", board[x][y][z]);
+				}
+				System.out.printf("| ");
+			}
+			System.out.printf("\n");
+		}
+		
+		
 		StringBuilder layers = new StringBuilder();
 		StringBuilder spaces = new StringBuilder();
 		
@@ -28,38 +56,14 @@ public class Board {
 		}
 		for (int z = 0; z < DIM; z++){
 			if((DIM%2)==0){
-				layers.append(spaces + "  layer " + z + spaces + "    |");
+				layers.append(spaces + "  layer " + z + spaces + "  |");
 			} else{
-				layers.append(spaces + "  layer " + z + spaces + "     |");
+				layers.append(spaces + "  layer " + z + spaces + "   |");
 			}
 		}
 		String layer = layers.toString();
 		System.out.println(layer);
-		
-		
-		for (int x = 0; x < DIM; x++){
-			for (int y = 0; y < DIM; y++){
-				System.out.printf("%d | ", DIM-x-1);
-				for (int z = 0; z < DIM; z++){
-					System.out.printf("%s  ", board[x][y][z]);
-				}
-			}
-			System.out.printf("\n");
-		}
-		
-		StringBuilder numbers = new StringBuilder();
-		for (int z = 0; z < DIM; z++){
-			numbers.append("  |");
-			for(int i = 0; i < DIM; i++){
-				if (i == DIM -1){
-					numbers.append("  " + i + "   ");
-				} else{
-					numbers.append("  " + i + "  ");
-				}
-			}
-		}
-		String number = numbers.toString();
-		System.out.println(number);
+
 	}
 	
 	
@@ -125,7 +129,6 @@ public class Board {
 	
 	    public Mark getField(int row, int col, int height) {
 	    	assert (isField(row, col, height));
-	    	System.out.println(row +" " +col + " " + height);
 	    	return board[row][col][height];
 	    }
 	
@@ -170,68 +173,121 @@ public class Board {
 	    
 	    public boolean hasRow(Mark m) {
 	    	boolean hasRow = false;
-	   
-	    	for (int z = 0; z < DIM; z++){
-	    		for (int j = 0; j < DIM; j++) {
-	        		
-	    			int row = 0;
-	    			for (int i = 0; i < DIM; i++) {
-	        			if (getField(i, j, z) == m) row++;
-	        		}
-	        		if (row == DIM) {
-	        			hasRow = true;
-	        			break;
-	        		}
-	    		}
-	    	}
-	        return hasRow;
-	    }
-
-	    public boolean hasColumn(Mark m) {
-	    	boolean hasCol = false;
+	    	int hasWin = 0;
 	    	
 	    	for (int z = 0; z < DIM; z++){
-	    		for (int i = 0; i < DIM; i++) {
-	        		int col = 0;
-	        		
-	        		for (int j = 0; j < DIM; j++) {
-	        			if (getField(i, j, z) == m) col++;
-	        		}
-	        		if (col == DIM) {
-	        			hasCol = true;
-	        			break;
-	        		}
+	    		for (int x = 0; x < DIM; x++){
+	    			for(int y = 0; y < (DIM-3); y++) {
+	    	    		if(getField(x, y, z) == m){
+	    	    			for(int w = (y+1); w < (y+4); ){
+	    	    				if(hasWin == WIN-1){
+    	    						hasRow=true;
+    	    						return hasRow;
+    	    					}
+	    	    				if(getField(x, w, z) == m){
+	    	    					hasWin++;
+	    	    					w++;
+	    	    				} else {
+	    	    					hasRow = false;
+	    	    					hasWin = 0;
+	    	    					break;
+	    	    				}
+	    	    			}
+	    	    		}
+	    			}
 	    		}
 	    	}
-	        return hasCol;
+	    	return hasRow;
 	    }
-	    
+	    				
+	    public boolean hasColumn(Mark m) {
+	    	boolean hasColumn = false;
+	    	int hasWin = 0;
+	    	
+	    	for (int y = 0; y < DIM; y++){
+	    		for (int z = 0; z < DIM; z++){
+	    			for(int x = 0; x < (DIM); x++) {
+	    	    		if(getField(x, y, z) == m){
+	    	    			for(int w = (x+1); w < (x+4); ){
+	    	    				if(hasWin == WIN-1){
+    	    						hasColumn=true;
+    	    						return hasColumn;
+    	    					}
+	    	    				if(getField(w, y, z) == m){
+	    	    					hasWin++;
+	    	    					w++;
+	    	    				} else {
+	    	    					hasColumn = false;
+	    	    					hasWin = 0;
+	    	    					break;
+	    	    				}
+	    	    			}
+	    	    		}
+	    			}
+	    		}
+	    	}
+	    	return hasColumn;
+	    }
+	    	
 	    public boolean hasStack(Mark m) {
 	    	boolean hasStack = false;
-	    	for (int i = 0; i < DIM; i++){
-	    		
-	    		for (int j = 0; j < DIM; j++) {
-	    			int stack = 0;
-	    			
-	    			for (int z = 0; z < DIM; z++) {
-	        			if (getField(i, j, z) == m) stack++;
-	        		}
-	        		if (stack == DIM) {
-	        			hasStack = true;
-	        			break;
-	        		}
+	    	int hasWin = 0;
+	    	
+	    	for (int y = 0; y < DIM; y++){
+	    		for (int x = 0; x < DIM; x++){
+	    			for(int z = 0; z < (DIM); z++) {
+	    	    		if(getField(x, y, z) == m){
+	    	    			for(int w = (z+1); w < (z+4); ){
+	    	    				if(hasWin == WIN-1){
+    	    						hasStack=true;
+    	    						return hasStack;
+    	    					}
+	    	    				if(getField(x, y, w) == m){
+	    	    					hasWin++;
+	    	    					w++;
+	    	    				} else {
+	    	    					hasStack = false;
+	    	    					hasWin = 0;
+	    	    					break;
+	    	    				}
+	    	    			}
+	    	    		}
+	    			}
 	    		}
 	    	}
 	    	return hasStack;
 	    }
+	    	
+//	    	for (int i = 0; i < DIM; i++){
+//	    		
+//	    		for (int j = 0; j < DIM; j++) {
+//	    			int stack = 0;
+//	    			
+//	    			for (int z = 0; z < DIM; z++) {
+//	        			if (getField(i, j, z) == m) stack++;
+//	        		}
+//	        		if (stack == DIM) {
+//	        			hasStack = true;
+//	        			break;
+//	        		}
+//	    		}
+//	    	}
+//	    	return hasStack;
+//	    }
+//	    
+	    
+	    
+	    
 	    
 	    public boolean hasDiagonal(Mark m) {
 	    	boolean hasDiagonalLeftZ = false;
 	    	boolean hasDiagonalRightZ = false;
 	    	
-	    	for (int z = 0; z < DIM; z++){
+//	    	for (int z = 0; z < DIM; z++){
 	    		
+	    	
 	    		for (int x = 0; x < DIM; x++){
+	    			int z= 0;
 	    			if(getField(x, x, z) == m){
 	    				hasDiagonalLeftZ = true;
 	    			} else {
@@ -240,8 +296,9 @@ public class Board {
 	    			}
 	    		}
 	    		
-	    		for (int x = 0; x < DIM; x++){
-	    			for (int y = DIM; y > 0; y--){
+	    		for (int y = DIM-1; y >= 0; y--){
+	    			for (int x = 0; x < DIM; x++){
+	    				int z = 0;
 	    				if(getField(x, y, z) == m){
 	    					hasDiagonalRightZ = true;
 	    				} else {
@@ -251,7 +308,6 @@ public class Board {
 	    				
 	    			}
 	    		}
-	    	}
 	    	
 	    	boolean hasDiagonalLeftI = false;
 	    	boolean hasDiagonalRightI = false;
@@ -268,7 +324,7 @@ public class Board {
 	    		}
 	    		
 	    		for (int x = 0; x < DIM; x++){
-	    			for (int y = DIM; y > 0; y--){
+	    			for (int y = DIM-1; y >= 0; y--){
 	    				if(getField(i, x, y) == m){
 	    					hasDiagonalRightI = true;
 	    				} else {
@@ -295,7 +351,7 @@ public class Board {
 	    		}
 	    		
 	    		for (int x = 0; x < DIM; x++){
-	    			for (int y = DIM; y > 0; y--){
+	    			for (int y = DIM-1; y >= 0; y--){
 	    				if(getField(x, j, y) == m){
 	    					hasDiagonalRightJ = true;
 	    				} else {
@@ -317,7 +373,7 @@ public class Board {
 	    //@ ensures \result == this.hasRow(m) || this.hasColumn(m) | this.hasDiagonal(m);
 	    /*@ pure */
 	    public boolean isWinner(Mark m) {
-	    	assert ( m == Mark.XX || m == Mark.OO);
+	    	assert ( m == Mark.XXX || m == Mark.OOO);
 	    	
 	    	return hasRow(m) || hasColumn(m) || hasDiagonal(m) || hasStack(m);
 	    }
@@ -326,7 +382,7 @@ public class Board {
 	    //@ ensures \result == isWinner(Mark.XX) | \result == isWinner(Mark.OO);
 	    /*@pure*/
 	    public boolean hasWinner() {
-	    	return isWinner(Mark.XX) || isWinner(Mark.OO);
+	    	return isWinner(Mark.XXX) || isWinner(Mark.OOO);
 	    }	    
 	    
 	    

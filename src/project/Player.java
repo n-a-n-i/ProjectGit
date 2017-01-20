@@ -4,7 +4,7 @@ public abstract class Player {
 
     // -- Instance variables -----------------------------------------
 
-    protected static String name;
+    protected String name;
     private Mark mark;
 
     // -- Constructors -----------------------------------------------
@@ -30,7 +30,7 @@ public abstract class Player {
      * Returns the name of the player.
      */
     /*@ pure */ public String getName() {
-        return name;
+    	return name;
     }
 
     /**
@@ -66,9 +66,11 @@ public abstract class Player {
      *            the current board
      */
     public void makeMove(Board board) {
-        int choiceX = determineMove(board)[0];
-        int choiceY = determineMove(board)[1];
+    	int[] move = determineMove(board);
+        int choiceX = move[0];
+        int choiceY = move[1];
         board.setField(choiceX, choiceY, getMark());
+        
     }
 
 }

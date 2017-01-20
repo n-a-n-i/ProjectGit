@@ -43,27 +43,32 @@ public class HumanPlayer extends Player {
      */
     public int[] determineMove(Board board) {
     	boolean valid = false;
-    	int[] choices = new int[1];
+    	int[] choices = new int[2];
     	int choiceX = 0;
     	int choiceY = 0;
     	while (!valid) {
     		String promptX = "> " + getName() + " (" + getMark().toString() + ")"
-                    + ", which row do you want to chooose? ";
+                    + ", which row do you want to choose? ";
             choiceX = readInt(promptX);
             
             String promptY = "> " + getName() + " (" + getMark().toString() + ")"
-                    + ", which column do you want to chooose? ";
+                    + ", which column do you want to choose? ";
             choiceY = readInt(promptY);
             
             valid = board.isField(choiceX, choiceY) && board.isEmptyField(choiceX, choiceY);
             
-            System.out.println("ERROR: field " + choiceX + ", " 
-                        + " is no valid choice.");
+            if (valid){
+            	choices[0] = choiceX;
+            	choices[1] = choiceY;
+            	break;
+            } else{
+            	System.out.println("ERROR: field " + choiceX + ", " + choiceY
+                      + " is no valid choice.");
             }
-    	choices[0] = choiceX;
-    	choices[1] = choiceY;
+            }
     	return choices;
     }
+    
     	
 
     /**

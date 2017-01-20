@@ -113,7 +113,6 @@ public class Game {
      */
     private void play() {
     	update();
-    	
     	while (!board.hasWinner() && !board.isFull()) {
     		players[current].makeMove(board);
     		current = (current + 1) % 2;

@@ -1,7 +1,7 @@
 package project;
 
 public enum Mark {
-    EMP, XX, OO;
+    EMP, XXX, OOO;
 
     /*@
        ensures this == Mark.XX ==> \result == Mark.OO;
@@ -14,10 +14,10 @@ public enum Mark {
      * @return the other mark is this mark is not EMPTY or EMPTY
      */
     public Mark other() {
-        if (this == XX) {
-            return OO;
-        } else if (this == OO) {
-            return XX;
+        if (this == XXX) {
+            return OOO;
+        } else if (this == OOO) {
+            return XXX;
         } else {
             return EMP;
         }
