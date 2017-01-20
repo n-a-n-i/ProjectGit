@@ -51,11 +51,11 @@ public class HumanPlayer extends Player {
                     + ", which row do you want to choose? ";
             choiceX = readInt(promptX);
             
-            String promptY = "> " + getName() + " (" + getMark().toString() + ")"
+            String promptY = "> " + this.getName() + " (" + getMark().toString() + ")"
                     + ", which column do you want to choose? ";
             choiceY = readInt(promptY);
             
-            valid = board.isField(choiceX, choiceY) && board.isEmptyField(choiceX, choiceY);
+            valid = board.isEmptyField(choiceX, choiceY, board.firstEmptyField(choiceX, choiceY)); //board.isField(choiceX, choiceY) && 
             
             if (valid){
             	choices[0] = choiceX;

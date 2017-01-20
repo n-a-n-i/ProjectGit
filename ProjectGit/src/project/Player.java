@@ -30,7 +30,7 @@ public abstract class Player {
      * Returns the name of the player.
      */
     /*@ pure */ public String getName() {
-    	return name;
+        return name;
     }
 
     /**

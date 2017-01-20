@@ -113,6 +113,7 @@ public class Game {
      */
     private void play() {
     	update();
+    	
     	while (!board.hasWinner() && !board.isFull()) {
     		players[current].makeMove(board);
     		current = (current + 1) % 2;
@@ -137,13 +138,10 @@ public class Game {
      * Prints the result of the last game. <br>
      */
     private void printResult() {
-        if (board.hasWinner()) {
-            Player winner = board.isWinner(players[0].getMark()) ? players[0]
-                    : players[1];
-            System.out.println("Speler " + winner.getName() + " ("
-                    + winner.getMark().toString() + ") has won!");
-        } else {
-            System.out.println("Draw. There is no winner!");
-        }
+    	if(board.hasWinner()){
+    		System.out.println("Player with mark " + board.lastM + " has won!" );
+    	} else if (board.isFull()){
+    		System.out.println("Draw, there is no winner.");
+    	}
     }
 }
