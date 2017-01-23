@@ -1,4 +1,4 @@
-package project;
+package server;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import project.Peer;
 
 /**
  * Server.

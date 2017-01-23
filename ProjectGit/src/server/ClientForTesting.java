@@ -1,10 +1,12 @@
-package project;
+package server;
 
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import project.Peer;
 
 /**
  * Client class for a simple client-server application
