@@ -1,4 +1,4 @@
-package project;
+package server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,8 +10,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import server.Server;
 
 /**
  * Peer for a simple client-server application
