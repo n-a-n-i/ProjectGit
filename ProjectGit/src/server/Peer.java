@@ -56,6 +56,7 @@ public class Peer implements Runnable {
 	 * characters to the default output.
 	 */
 	public void run() {
+	//	SendServerCapabilities();
 		String line = null;
 		try {
 			while ((line = in.readLine()) != null) {

@@ -3,16 +3,20 @@ package project;
 public class Board {
 
 	private Mark[][][] board;
-	public int DIM;
-	public int WIN = 4;
+	public int dim;
+	public static final int WIN = 4;
 	public int lastMoveX;
 	public int lastMoveY;
 	public int lastMoveZ;
 	public Mark lastM = Mark.EMP;
 
+	/*
+	 * @requires dimension > 0;
+	 * ensures \forall int x,y,z; board[x][y][z].Mark == Mark.EMP;
+	 */
 	public Board(int dimension) {
 		board = new Mark[dimension][dimension][dimension];
-		DIM = dimension;
+		this.dim = dimension;
 
 		for (int x = 0; x < dimension; x++) {
 			for (int y = 0; y < dimension; y++) {
@@ -25,10 +29,10 @@ public class Board {
 
 	public void showBoard() {
 		StringBuilder numbers = new StringBuilder();
-		for (int z = 0; z < DIM; z++) {
+		for (int z = 0; z < dim; z++) {
 			numbers.append("  |");
-			for (int i = 0; i < DIM; i++) {
-				if (i == DIM - 1) {
+			for (int i = 0; i < dim; i++) {
+				if (i == dim - 1) {
 					numbers.append("  " + i + " ");
 				} else {
 					numbers.append("  " + i + "  ");
@@ -38,10 +42,10 @@ public class Board {
 		String number = numbers.toString();
 		System.out.println(number);
 
-		for (int x = 0; x < DIM; x++) {
+		for (int x = 0; x < dim; x++) {
 			System.out.printf("%d | ", x);
-			for (int z = 0; z < DIM; z++) {
-				for (int y = 0; y < DIM; y++) {
+			for (int z = 0; z < dim; z++) {
+				for (int y = 0; y < dim; y++) {
 					System.out.printf("%s  ", board[x][y][z]);
 				}
 				System.out.printf("| ");
@@ -53,11 +57,11 @@ public class Board {
 		StringBuilder spaces = new StringBuilder();
 
 		layers.append("  |");
-		for (int i = 0; i < ((DIM * 5) - 10) / 2; i++) {
+		for (int i = 0; i < ((dim * 5) - 10) / 2; i++) {
 			spaces.append(" ");
 		}
-		for (int z = 0; z < DIM; z++) {
-			if ((DIM % 2) == 0) {
+		for (int z = 0; z < dim; z++) {
+			if ((dim % 2) == 0) {
 				layers.append(spaces + "  layer " + z + spaces + "  |");
 			} else {
 				layers.append(spaces + "  layer " + z + spaces + "   |");
@@ -85,52 +89,47 @@ public class Board {
 		return false;
 	}
 
-	//// @assert isField(row, col)
-	// public boolean isEmptyField(int row, int col) {
-	// if (this.getField(row, col, firstEmptyField(row, col)) == Mark.EMP){
-	// return true;
-	// }
-	// return false;
-	// }
-
-	public boolean isField(int row, int col, int height) {
-		if (row >= 0 && row < DIM && col >= 0 && col < DIM && height >= 0 && height < DIM) {
+	/* @ requires 0 <= row < DIM && 0 <= col < DIM && 0 <= height < DIM */
+	/* @ pure */public boolean isField(int row, int col, int height) {
+		if (row >= 0 && row < dim && col >= 0 && col < dim && height >= 0 && height < dim) {
 			return true;
 		}
 		return false;
 	}
 
-	// public boolean isField(int row, int col){
-	// if(isField(row, col, firstEmptyField(row, col))){
-	// return true;
-	// } else {
-	// return false;
-	// }
-	// }
-
-	public int firstEmptyField(int row, int col) {
-		assert (row >= 0 && row < DIM);
-		assert (col >= 0 && col < DIM);
+	/*
+	 * @ requires 0 <= row < DIM && 0 <= col < DIM; requires isEmptyField(row,
+	 * col, z) != null; ensures 0 <= \result > DIM;
+	 */
+	/* @pure */public int firstEmptyField(int row, int col) {
+		assert row >= 0 && row < dim;
+		assert col >= 0 && col < dim;
 		int height = -1;
 
-		try {
-			for (int z = 0; z < DIM; z++) {
-				if (isEmptyField(row, col, z)) {
-					height = z;
-					break;
-				}
+		for (int z = 0; z < dim; z++) {
+			if (isEmptyField(row, col, z)) {
+				height = z;
+				break;
+			} else {
+				System.out.println("There is no empty field in this stack.");
 			}
-		} catch (Exception e) {
-			System.out.println("There is no empty field in this stack.");
 		}
 		return height;
 	}
 
+	/*
+	 * @ requires 0 <= row < DIM && 0 <= col < DIM && 0 <= height < DIM; requires isField(row, col,
+	 * height) != null; ensures 0 <= \result > DIM;
+	 */
 	public Mark getField(int row, int col, int height) {
-		assert (isField(row, col, height));
+		assert isField(row, col, height);
 		return board[row][col][height];
 	}
-
+	/*
+	 * @ requires 0 <= row < DIM && 0 <= col < DIM; 
+	 * 	 requires isEmptyField(row, col, z) != null; ensures 0 <= \result > DIM;
+	 *   requires m == Mark.XXX || m == Mark.OOO;
+	 */
 	public void setField(int row, int col, Mark m) {
 		int z = firstEmptyField(row, col);
 		board[row][col][z] = m;
@@ -141,14 +140,12 @@ public class Board {
 		lastM = m;
 	}
 
-	// @ ensures \result == (\forall int i; i <= 0 & i < DIM * DIM;
-	// this.getField(i) != Mark.EMPTY);
-	/* @pure */
-	public boolean isFull() {
+	
+	/* @pure */ public boolean isFull() {
 		boolean full = false;
-		for (int i = 0; i < DIM; i++) {
-			for (int j = 0; j < DIM; j++) {
-				for (int z = 0; z < DIM; z++) {
+		for (int i = 0; i < dim; i++) {
+			for (int j = 0; j < dim; j++) {
+				for (int z = 0; z < dim; z++) {
 					if (!isEmptyField(i, j, z)) {
 						full = true;
 					} else {
@@ -161,40 +158,38 @@ public class Board {
 		return full;
 	}
 
+	// @ ensures (\forall int x,y,z; board[x][y][z].Mark == Mark.EMP);
 	public void reset() {
-		for (int x = 0; x < DIM; x++) {
-			for (int y = 0; y < DIM; y++) {
-				for (int z = 0; z < DIM; z++) {
+		for (int x = 0; x < dim; x++) {
+			for (int y = 0; y < dim; y++) {
+				for (int z = 0; z < dim; z++) {
 					board[x][y][z] = Mark.EMP;
 				}
 			}
 		}
 	}
-	
-	// @requires m == Mark.XX | m == Mark.OO;
-	// @ ensures \result == this.hasRow(m) || this.hasColumn(m) |
-	// this.hasDiagonal(m);
-	/* @ pure */
-	public boolean isWinner() {
+
+	/*
+	 * @ensures \result == this.hasRow() || this.hasColumn() || this.hasStack()
+	 * || this.has2DDiagonal() || this.has3DDiagonal;
+	 */
+	/* @ pure */ public boolean isWinner() {
 		return hasRow() || hasColumn() || hasStack() || has2DDiagonal() || has3DDiagonal();
 	}
 
-	// @ ensures \result == isWinner(Mark.XX) | \result == isWinner(Mark.OO);
-	/* @pure */
-	public boolean hasWinner() {
-		return isWinner() || isWinner();
+	// @ensures \result == isWinner();
+	/* @pure */ public boolean hasWinner() {
+		return isWinner();
 	}
 
-	
-	
-	
-	
-	public boolean hasRow(){
+	// @requires \exists board.Mark != EMP;
+	// @ensures \result == true || false;
+	public boolean hasRow() {
 		boolean hasWin = false;
 		boolean hasRow = false;
 		int winning = 1;
-		if(lastM != Mark.EMP){
-			for (int y = (lastMoveY + 1); y < DIM; y++) {
+		if (lastM != Mark.EMP) {
+			for (int y = lastMoveY + 1; y < dim; y++) {
 				if (getField(lastMoveX, y, lastMoveZ) == lastM) {
 					winning++;
 					if (winning == WIN) {
@@ -205,7 +200,7 @@ public class Board {
 					break;
 				}
 			}
-			for (int y = (lastMoveY - 1); y >= 0; y--) {
+			for (int y = lastMoveY - 1; y >= 0; y--) {
 				if (getField(lastMoveX, y, lastMoveZ) == lastM) {
 					winning++;
 					if (winning == WIN) {
@@ -220,13 +215,15 @@ public class Board {
 		}
 		return hasWin;
 	}
-	
-	public boolean hasColumn(){
+
+	// @requires \exists board.Mark != EMP;
+	// @ensures \result = true || false;
+	public boolean hasColumn() {
 		boolean hasColumn = false;
 		int winning = 1;
 
-		if(lastM != Mark.EMP){
-			for (int x = (lastMoveX + 1); x < DIM; x++) {
+		if (lastM != Mark.EMP) {
+			for (int x = lastMoveX + 1; x < dim; x++) {
 				if (getField(x, lastMoveY, lastMoveZ) == lastM) {
 					winning++;
 					if (winning == WIN) {
@@ -237,7 +234,7 @@ public class Board {
 					break;
 				}
 			}
-			for (int x = (lastMoveX - 1); x >= 0; x--) {
+			for (int x = lastMoveX - 1; x >= 0; x--) {
 				if (getField(x, lastMoveY, lastMoveZ) == lastM) {
 					winning++;
 					if (winning == WIN) {
@@ -252,13 +249,15 @@ public class Board {
 		}
 		return hasColumn;
 	}
-		
-	public boolean hasStack(){
+
+	// @requires \exists board.Mark != EMP;
+	// @ensures \result = true || false;
+	public boolean hasStack() {
 		boolean hasStack = false;
 		int winning = 1;
-		
-		if(lastM != Mark.EMP){
-			for(int z = (lastMoveZ - 1); z >= 0 ; z--) {
+
+		if (lastM != Mark.EMP) {
+			for (int z = lastMoveZ - 1; z >= 0; z--) {
 				if (getField(lastMoveX, lastMoveY, z) == lastM) {
 					winning++;
 					if (winning == WIN) {
@@ -273,255 +272,254 @@ public class Board {
 		}
 		return hasStack;
 	}
-	
-		
-	public boolean has2DDiagonal(){
-		boolean has2DDiagonal = false;
+
+	// @requires \exists board.Mark != EMP;
+	// @ensures \result = true || false;
+	public boolean has2DDiagonal() {
 		int winning = 1;
-		
-		if(lastM != Mark.EMP){
-			//-------------- check for diagonal left to right in z ----------
-			for (int x = (lastMoveX + 1), y = (lastMoveY + 1); x < DIM && y < DIM; x++, y++){
-				if(getField(x, y, lastMoveZ) == lastM){
+
+		if (lastM != Mark.EMP) {
+			// -------------- check for diagonal left to right in z ----------
+			for (int x = lastMoveX + 1, y = lastMoveY + 1; x < dim && y < dim; x++, y++) {
+				if (getField(x, y, lastMoveZ) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has2DDiagonal = true;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					break;
 				}
 			}
-			for(int x = (lastMoveX - 1), y = (lastMoveY - 1); x >= 0 && y >= 0; x--, y--){
-				if(getField(x, y, lastMoveZ) == lastM){
+			for (int x = lastMoveX - 1, y = lastMoveY - 1; x >= 0 && y >= 0; x--, y--) {
+				if (getField(x, y, lastMoveZ) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has2DDiagonal = true;
-					} 
+					if (winning == WIN) {
+						return true;
+					}
 				} else {
 					winning = 1;
 					break;
 				}
 			}
-			
 
-			//-------------- check for diagonal right to left in z ----------
-			for (int x = (lastMoveX + 1), y = (lastMoveY - 1); x < DIM && y >= 0; x++, y--){
+			// -------------- check for diagonal right to left in z ----------
+			for (int x = lastMoveX + 1, y = lastMoveY - 1; x < dim && y >= 0; x++, y--) {
 				System.out.println("test");
-				if(getField(x, y, lastMoveZ) == lastM){
+				if (getField(x, y, lastMoveZ) == lastM) {
 					winning++;
-					if(winning == WIN){
-						has2DDiagonal = true;
-						return has2DDiagonal;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					break;
 				}
 			}
-			for(int x = (lastMoveX - 1), y = (lastMoveY + 1); x >= 0 && y < DIM; x--, y++){
-				if(getField(x, y, lastMoveZ) == lastM){
+			for (int x = lastMoveX - 1, y = lastMoveY + 1; x >= 0 && y < dim; x--, y++) {
+				if (getField(x, y, lastMoveZ) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has2DDiagonal = true;
-					} 
+					if (winning == WIN) {
+						return true;
+					}
 				} else {
 					winning = 1;
 					break;
 				}
 			}
-			
 
-			//-------------- check for diagonal left to right in x ----------
-			for (int y = (lastMoveY + 1), z = (lastMoveZ + 1); y < DIM && z < DIM; y++, z++){
-				if(getField(lastMoveX, y, z) == lastM){
+			// -------------- check for diagonal left to right in x ----------
+			for (int y = lastMoveY + 1, z = lastMoveZ + 1; y < dim && z < dim; y++, z++) {
+				if (getField(lastMoveX, y, z) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has2DDiagonal = true;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					break;
 				}
 			}
-			for(int y = (lastMoveY - 1), z = (lastMoveZ - 1); y >= 0 && z >= 0; y--, z--){
-				if(getField(lastMoveX, y, z) == lastM){
+			for (int y = lastMoveY - 1, z = lastMoveZ - 1; y >= 0 && z >= 0; y--, z--) {
+				if (getField(lastMoveX, y, z) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has2DDiagonal = true;
-					} 
+					if (winning == WIN) {
+						return true;
+					}
 				} else {
 					winning = 1;
 					break;
 				}
 			}
-			
-			//-------------- check for diagonal left to right in y ----------
-			for (int x = (lastMoveX + 1), z = (lastMoveZ + 1); x < DIM && z < DIM; x++, z++){
-				if(getField(x, lastMoveY, z) == lastM){
-					winning++;
-					if(winning == WIN){
-						return has2DDiagonal = true;
-					}
-				} else {
-					break;
-				}
-			}
-			for(int x = (lastMoveX - 1), z = (lastMoveZ - 1); x >= 0 && z >= 0; x--, z--){
-				if(getField(x, lastMoveY, z) == lastM){
-					winning++;
-					if(winning == WIN){
-						return has2DDiagonal = true;
-					} 
-				} else {
-					winning = 1;
-					break;
-				}
-			}
-			
-			//-------------- check for diagonal right to left in x ----------
-					for (int y = (lastMoveY + 1), z = (lastMoveZ - 1); y < DIM && z >= 0; y++, z--){
-						if(getField(lastMoveX, y, z) == lastM){
-							winning++;
-							if(winning == WIN){
-								return has2DDiagonal = true;
-							}
-						} else {
-							break;
-						}
-					}
-					for(int y = (lastMoveY - 1), z = (lastMoveZ + 1); y >= 0 && z < DIM; y--, z++){
-						if(getField(lastMoveX, y, z) == lastM){
-							winning++;
-							if(winning == WIN){
-								return has2DDiagonal = true;
-							} 
-						} else {
-							winning = 1;
-							break;
-						}
-					}
 
-					
-					
-					
-					//-------------- check for diagonal right to left in y ----------
-					for (int x = (lastMoveX + 1), z = (lastMoveZ - 1); x < DIM && z >= 0; x++, z--){
-						if(getField(x, lastMoveY, z) == lastM){
-							winning++;
-							if(winning == WIN){
-								return has2DDiagonal = true;
-							}
-						} else {
-							break;
-						}
+			// -------------- check for diagonal left to right in y ----------
+			for (int x = lastMoveX + 1, z = lastMoveZ + 1; x < dim && z < dim; x++, z++) {
+				if (getField(x, lastMoveY, z) == lastM) {
+					winning++;
+					if (winning == WIN) {
+						return true;
 					}
-					for(int x = (lastMoveX - 1), z = (lastMoveZ + 1); x >= 0 && z < DIM; x--, z++){
-						if(getField(x, lastMoveY, z) == lastM){
-							winning++;
-							if(winning == WIN){
-								return has2DDiagonal = true;
-							} 
-						} else {
-							winning = 1;
-							break;
-						}
+				} else {
+					break;
+				}
+			}
+			for (int x = lastMoveX - 1, z = lastMoveZ - 1; x >= 0 && z >= 0; x--, z--) {
+				if (getField(x, lastMoveY, z) == lastM) {
+					winning++;
+					if (winning == WIN) {
+						return true;
 					}
+				} else {
+					winning = 1;
+					break;
+				}
+			}
+
+			// -------------- check for diagonal right to left in x ----------
+			for (int y = lastMoveY + 1, z = lastMoveZ - 1; y < dim && z >= 0; y++, z--) {
+				if (getField(lastMoveX, y, z) == lastM) {
+					winning++;
+					if (winning == WIN) {
+						return true;
+					}
+				} else {
+					break;
+				}
+			}
+			for (int y = lastMoveY - 1, z = lastMoveZ + 1; y >= 0 && z < dim; y--, z++) {
+				if (getField(lastMoveX, y, z) == lastM) {
+					winning++;
+					if (winning == WIN) {
+						return true;
+					}
+				} else {
+					winning = 1;
+					break;
+				}
+			}
+
+			// -------------- check for diagonal right to left in y ----------
+			for (int x = lastMoveX + 1, z = lastMoveZ - 1; x < dim && z >= 0; x++, z--) {
+				if (getField(x, lastMoveY, z) == lastM) {
+					winning++;
+					if (winning == WIN) {
+						return true;
+					}
+				} else {
+					break;
+				}
+			}
+			for (int x = lastMoveX - 1, z = lastMoveZ + 1; x >= 0 && z < dim; x--, z++) {
+				if (getField(x, lastMoveY, z) == lastM) {
+					winning++;
+					if (winning == WIN) {
+						return true;
+					}
+				} else {
+					winning = 1;
+					break;
+				}
+			}
 		}
-	return has2DDiagonal;
+		return false;
 	}
 
-
-	public boolean has3DDiagonal(){
-		boolean has3DDiagonal = false;
+	// @requires \exists board.Mark != EMP;
+	// @ensures \result = true || false;
+	public boolean has3DDiagonal() {
 		int winning = 1;
-		
-		if(lastM != Mark.EMP){
-			for (int x = (lastMoveX + 1), y = (lastMoveY + 1), z = (lastMoveZ + 1); x < DIM && y < DIM && z < DIM; x++, y++, z++){
-				if(getField(x, y, z) == lastM){
+
+		if (lastM != Mark.EMP) {
+			for (int x = lastMoveX + 1, y = lastMoveY + 1, z = lastMoveZ + 1; x < dim && y < dim
+					&& z < dim; x++, y++, z++) {
+				if (getField(x, y, z) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has3DDiagonal = true;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					break;
 				}
-				}
-			for (int x = (lastMoveX - 1), y = (lastMoveY - 1), z = (lastMoveZ - 1); x >= 0 && y >= 0 && z >= 0; x--, y--, z--){
-				if(getField(x, y, z) == lastM){
+			}
+			for (int x = lastMoveX - 1, y = lastMoveY - 1, z = lastMoveZ - 1; x >= 0 && y >= 0
+					&& z >= 0; x--, y--, z--) {
+				if (getField(x, y, z) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has3DDiagonal = true;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					winning = 1;
 					break;
 				}
 			}
-			
-			
-			for (int x = (lastMoveX + 1), y = (lastMoveY - 1), z = (lastMoveZ + 1); x < DIM && y >= 0 && z < DIM; x++, y--, z++){
+
+			for (int x = lastMoveX + 1, y = lastMoveY - 1, z = lastMoveZ + 1; x < dim && y >= 0
+					&& z < dim; x++, y--, z++) {
 				System.out.println("test");
-				if(getField(x, y, z) == lastM){
+				if (getField(x, y, z) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has3DDiagonal = true;
-					}
-				} else {
-					winning = 1;
-					break;
-				}
-			}	
-			for (int x = (lastMoveX - 1), y = (lastMoveY + 1), z = (lastMoveZ - 1); x >= 0 && y < DIM && z >= 0; x--, y++, z--){
-				if(getField(x, y, z) == lastM){
-					winning++;
-					if(winning == WIN){
-						return has3DDiagonal = true;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					winning = 1;
 					break;
 				}
 			}
-			
-			
-			for (int x = (lastMoveX - 1), y = (lastMoveY + 1), z = (lastMoveZ + 1); x >= 0 && y < DIM && z < DIM; x--, y++, z++){
-				if(getField(x, y, z) == lastM){
+			for (int x = lastMoveX - 1, y = lastMoveY + 1, z = lastMoveZ - 1; x >= 0 && y < dim
+					&& z >= 0; x--, y++, z--) {
+				if (getField(x, y, z) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has3DDiagonal = true;
-					}
-				} else {
-					break;
-				}
-				}
-			for (int x = (lastMoveX + 1), y = (lastMoveY - 1), z = (lastMoveZ - 1); x < DIM && y >= 0 && z >= 0; x++, y--, z--){
-				if(getField(x, y, z) == lastM){
-					winning++;
-					if(winning == WIN){
-						return has3DDiagonal = true;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					winning = 1;
 					break;
 				}
 			}
-			
-			
-			for (int x = (lastMoveX - 1), y = (lastMoveY - 1), z = (lastMoveZ + 1); x >= 0 && y >= 0 && z < DIM; x--, y--, z++){
+
+			for (int x = lastMoveX - 1, y = lastMoveY + 1, z = lastMoveZ + 1; x >= 0 && y < dim
+					&& z < dim; x--, y++, z++) {
+				if (getField(x, y, z) == lastM) {
+					winning++;
+					if (winning == WIN) {
+						return true;
+					}
+				} else {
+					break;
+				}
+			}
+			for (int x = lastMoveX + 1, y = lastMoveY - 1, z = lastMoveZ - 1; x < dim && y >= 0
+					&& z >= 0; x++, y--, z--) {
+				if (getField(x, y, z) == lastM) {
+					winning++;
+					if (winning == WIN) {
+						return true;
+					}
+				} else {
+					winning = 1;
+					break;
+				}
+			}
+
+			for (int x = lastMoveX - 1, y = lastMoveY - 1, z = lastMoveZ + 1; x >= 0 && y >= 0
+					&& z < dim; x--, y--, z++) {
 				System.out.println("test");
-				if(getField(x, y, z) == lastM){
+				if (getField(x, y, z) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has3DDiagonal = true;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					winning = 1;
 					break;
 				}
-			}	
-			for (int x = (lastMoveX + 1), y = (lastMoveY + 1), z = (lastMoveZ - 1); x < DIM && y < DIM && z >= 0; x++, y++, z--){
-				if(getField(x, y, z) == lastM){
+			}
+			for (int x = lastMoveX + 1, y = lastMoveY + 1, z = lastMoveZ - 1; x < dim && y < dim
+					&& z >= 0; x++, y++, z--) {
+				if (getField(x, y, z) == lastM) {
 					winning++;
-					if(winning == WIN){
-						return has3DDiagonal = true;
+					if (winning == WIN) {
+						return true;
 					}
 				} else {
 					winning = 1;
@@ -529,7 +527,7 @@ public class Board {
 				}
 			}
 		}
-		return has3DDiagonal;
+		return false;
 	}
 
 }

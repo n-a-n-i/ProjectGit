@@ -64,6 +64,7 @@ public class Server {
 
 			while (true) {
 				clientSocket = serversock.accept();
+				System.out.println(serversock);
 				// create Peer object and start the two-way communication
 				try {
 					Peer server = new Peer(name, clientSocket);
