@@ -1,4 +1,4 @@
-package Server2;
+package server2;
 public class ServerGUI extends JFrame implements ActionListener, MessageUI {
 	private JButton bConnect;
 	private JTextField tfPort;
