@@ -20,13 +20,19 @@ public class ClientHandler extends Thread {
     private BufferedWriter out;
     private String clientName;
 
+    
+    public Socket clientSock;
+    
     /**
      * Constructs a ClientHandler object
      * Initialises both Data streams.
      *@ requires server != null && sock != null;
      */
-    public ClientHandler(Server serverArg, Socket sockArg) throws IOException {
-        // TODO Add implementation
+    public ClientHandler(Socket sockArg) throws IOException {
+        clientSock = sockArg;
+        
+		in = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
+		out = new BufferedWriter(new OutputStreamWriter(clientSock.getOutputStream()));
     }
 
     /**
@@ -49,7 +55,7 @@ public class ClientHandler extends Thread {
      * broken and shutdown() will be called.
      */
     public void run() {
-        // TODO Add implementation
+    	// TODO Add implementation
     }
 
     /**
@@ -59,7 +65,29 @@ public class ClientHandler extends Thread {
      * and shutdown() is called.
      */
     public void sendMessage(String msg) {
-        // TODO Add implementation
+        try {
+			out.write(msg);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Could not write to output stream.");
+		}
+    	
+    	// TODO Add implementation
+    }
+    
+    public String readMessage(){
+    	String message;
+		while (true){
+			try {
+				message = in.readLine();
+				return message;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("Could not read from input stream");
+			}
+		}
     }
 
     /**
@@ -67,10 +95,10 @@ public class ClientHandler extends Thread {
      * sends a last broadcast to the Server to inform that the Client
      * is no longer participating in the chat.
      */
-    private void shutdown() {
-        server.removeHandler(this);
-        server.broadcast("[" + clientName + " has left]");
-    }
+//    private void shutdown() {
+//        server.removeHandler(this);
+//        server.broadcast("[" + clientName + " has left]");
+//    }
 
 }
 

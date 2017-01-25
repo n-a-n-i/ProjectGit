@@ -32,6 +32,7 @@ public class Client extends Thread {
 
 		try {
             sock = new Socket(host, port);
+            clientName = name;
         } catch (IOException e) {
             System.out.println("ERROR: could not create a socket on " + host
                     + " and port " + port);
