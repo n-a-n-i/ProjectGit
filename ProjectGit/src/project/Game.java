@@ -1,5 +1,8 @@
 package project;
 
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 public class Game {
@@ -51,6 +54,7 @@ public class Game {
 		players[0] = s0;
 		players[1] = s1;
 		current = 0;
+		System.setIn(new UncloseableInputStream());
 	}
 
 	// -- Commands ---------------------------------------------------
@@ -85,8 +89,7 @@ public class Game {
 	 */
 
 	/*
-	 * @ requires prompt, no, yes != null; 
-	 * ensures \result answer.equals(yes);
+	 * @ requires prompt, no, yes != null; ensures \result answer.equals(yes);
 	 */
 	private boolean readBoolean(String prompt, String yes, String no) {
 		String answer;
@@ -144,6 +147,37 @@ public class Game {
 			System.out.println("Player with mark " + board.lastM + " has won!");
 		} else if (board.isFull()) {
 			System.out.println("Draw, there is no winner.");
+		}
+	}
+
+	/**
+	 * Wraps an input stream to prevent it from being closed.
+	 */
+	private static class UncloseableInputStream extends FilterInputStream {
+
+		/**
+		 * Creates a wrapper around {@link System.in}.
+		 */
+		UncloseableInputStream() {
+			this(System.in);
+		}
+
+		/**
+		 * Creates a wrapper around an arbitrary {@link InputStream}.
+		 * 
+		 * @param stream
+		 *            The stream to wrap.
+		 */
+		UncloseableInputStream(InputStream stream) {
+			super(stream);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void close() throws IOException {
+			// Don't do anything
 		}
 	}
 }
