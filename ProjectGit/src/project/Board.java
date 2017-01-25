@@ -1,5 +1,6 @@
 package project;
 
+
 public class Board {
 
 	private Mark[][][] board;
@@ -11,8 +12,8 @@ public class Board {
 	public Mark lastM = Mark.EMP;
 
 	/*
-	 * @requires dimension > 0;
-	 * ensures \forall int x,y,z; board[x][y][z].Mark == Mark.EMP;
+	 * @requires dimension > 0; ensures \forall int x,y,z; board[x][y][z].Mark
+	 * == Mark.EMP;
 	 */
 	public Board(int dimension) {
 		board = new Mark[dimension][dimension][dimension];
@@ -72,14 +73,28 @@ public class Board {
 
 	}
 
-	// public int index(int row, int col, int height) {
-	// assert (row >= 0 && row < DIM);
-	// assert (col >= 0 && col < DIM);
-	// assert (height >= 0 && height < DIM);
-	//
-	// int index = row * DIM + col + (height * DIM * DIM);
-	// return index;
-	// }
+	/**
+	 * Creates a deep copy of this field.
+	 */
+	/*
+	 * @ ensures \result != this; ensures (\forall int i; 0 <= i & i < DIM *
+	 * DIM; \result.getField(i) == this.getField(i));
+	 * 
+	 * @
+	 */
+	public Board deepCopy() {
+		Board copy = new Board(dim);
+		for (int z = 0; z < dim; z++) {
+			for (int x = 0; x < dim; x++) {
+				for (int y = 0; y < dim; y++) {
+					Mark m = getField(x, y, z);
+					copy.setField(x, y, m);
+				}
+			}
+		}
+		copy.showBoard();
+		return copy;
+	}
 
 	// @assert isField(row, col, height)
 	public boolean isEmptyField(int row, int col, int height) {
@@ -118,17 +133,18 @@ public class Board {
 	}
 
 	/*
-	 * @ requires 0 <= row < DIM && 0 <= col < DIM && 0 <= height < DIM; requires isField(row, col,
-	 * height) != null; ensures 0 <= \result > DIM;
+	 * @ requires 0 <= row < DIM && 0 <= col < DIM && 0 <= height < DIM;
+	 * requires isField(row, col, height) != null; ensures 0 <= \result > DIM;
 	 */
 	public Mark getField(int row, int col, int height) {
 		assert isField(row, col, height);
 		return board[row][col][height];
 	}
+
 	/*
-	 * @ requires 0 <= row < DIM && 0 <= col < DIM; 
-	 * 	 requires isEmptyField(row, col, z) != null; ensures 0 <= \result > DIM;
-	 *   requires m == Mark.XXX || m == Mark.OOO;
+	 * @ requires 0 <= row < DIM && 0 <= col < DIM; requires isEmptyField(row,
+	 * col, z) != null; ensures 0 <= \result > DIM; requires m == Mark.XXX || m
+	 * == Mark.OOO;
 	 */
 	public void setField(int row, int col, Mark m) {
 		int z = firstEmptyField(row, col);
@@ -140,7 +156,6 @@ public class Board {
 		lastM = m;
 	}
 
-	
 	/* @pure */ public boolean isFull() {
 		boolean full = false;
 		for (int i = 0; i < dim; i++) {
@@ -174,6 +189,7 @@ public class Board {
 	 * || this.has2DDiagonal() || this.has3DDiagonal;
 	 */
 	/* @ pure */ public boolean isWinner() {
+		System.out.println("1: " + hasRow() + "2: " + hasColumn() +"3: "+ hasStack() + "4: " + has2DDiagonal() + "5: " +has3DDiagonal());
 		return hasRow() || hasColumn() || hasStack() || has2DDiagonal() || has3DDiagonal();
 	}
 
@@ -304,7 +320,6 @@ public class Board {
 
 			// -------------- check for diagonal right to left in z ----------
 			for (int x = lastMoveX + 1, y = lastMoveY - 1; x < dim && y >= 0; x++, y--) {
-				System.out.println("test");
 				if (getField(x, y, lastMoveZ) == lastM) {
 					winning++;
 					if (winning == WIN) {
@@ -453,7 +468,6 @@ public class Board {
 
 			for (int x = lastMoveX + 1, y = lastMoveY - 1, z = lastMoveZ + 1; x < dim && y >= 0
 					&& z < dim; x++, y--, z++) {
-				System.out.println("test");
 				if (getField(x, y, z) == lastM) {
 					winning++;
 					if (winning == WIN) {
@@ -503,7 +517,6 @@ public class Board {
 
 			for (int x = lastMoveX - 1, y = lastMoveY - 1, z = lastMoveZ + 1; x >= 0 && y >= 0
 					&& z < dim; x--, y--, z++) {
-				System.out.println("test");
 				if (getField(x, y, z) == lastM) {
 					winning++;
 					if (winning == WIN) {
