@@ -1,5 +1,7 @@
 package project;
 
+import java.util.LinkedList;
+import java.util.List;
 
 public class Board {
 
@@ -10,6 +12,7 @@ public class Board {
 	public int lastMoveY;
 	public int lastMoveZ;
 	public Mark lastM = Mark.EMP;
+	int[][] winningMoves = new int[4][3];
 
 	/*
 	 * @requires dimension > 0; ensures \forall int x,y,z; board[x][y][z].Mark
@@ -126,7 +129,7 @@ public class Board {
 				height = z;
 				break;
 			} else {
-				System.out.println("There is no empty field in this stack.");
+				// System.out.println("There is no empty field in this stack.");
 			}
 		}
 		return height;
@@ -158,9 +161,9 @@ public class Board {
 
 	/* @pure */ public boolean isFull() {
 		boolean full = false;
-		for (int i = 0; i < dim; i++) {
-			for (int j = 0; j < dim; j++) {
-				for (int z = 0; z < dim; z++) {
+		for (int z = 0; z < dim; z++) {
+			for (int i = 0; i < dim; i++) {
+				for (int j = 0; j < dim; j++) {
 					if (!isEmptyField(i, j, z)) {
 						full = true;
 					} else {
@@ -189,7 +192,7 @@ public class Board {
 	 * || this.has2DDiagonal() || this.has3DDiagonal;
 	 */
 	/* @ pure */ public boolean isWinner() {
-		System.out.println("1: " + hasRow() + "2: " + hasColumn() +"3: "+ hasStack() + "4: " + has2DDiagonal() + "5: " +has3DDiagonal());
+
 		return hasRow() || hasColumn() || hasStack() || has2DDiagonal() || has3DDiagonal();
 	}
 
@@ -204,21 +207,26 @@ public class Board {
 		boolean hasWin = false;
 		boolean hasRow = false;
 		int winning = 1;
+
 		if (lastM != Mark.EMP) {
 			for (int y = lastMoveY + 1; y < dim; y++) {
 				if (getField(lastMoveX, y, lastMoveZ) == lastM) {
 					winning++;
 					if (winning == WIN) {
+						for (int i = 0; i < 4; i++) {
+						}
 						hasRow = true;
 						return hasRow;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
 			for (int y = lastMoveY - 1; y >= 0; y--) {
 				if (getField(lastMoveX, y, lastMoveZ) == lastM) {
 					winning++;
+
 					if (winning == WIN) {
 						hasRow = true;
 						return hasRow;
@@ -247,6 +255,7 @@ public class Board {
 						return hasColumn;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
@@ -293,7 +302,6 @@ public class Board {
 	// @ensures \result = true || false;
 	public boolean has2DDiagonal() {
 		int winning = 1;
-
 		if (lastM != Mark.EMP) {
 			// -------------- check for diagonal left to right in z ----------
 			for (int x = lastMoveX + 1, y = lastMoveY + 1; x < dim && y < dim; x++, y++) {
@@ -303,6 +311,7 @@ public class Board {
 						return true;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
@@ -317,7 +326,6 @@ public class Board {
 					break;
 				}
 			}
-
 			// -------------- check for diagonal right to left in z ----------
 			for (int x = lastMoveX + 1, y = lastMoveY - 1; x < dim && y >= 0; x++, y--) {
 				if (getField(x, y, lastMoveZ) == lastM) {
@@ -326,6 +334,7 @@ public class Board {
 						return true;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
@@ -340,7 +349,6 @@ public class Board {
 					break;
 				}
 			}
-
 			// -------------- check for diagonal left to right in x ----------
 			for (int y = lastMoveY + 1, z = lastMoveZ + 1; y < dim && z < dim; y++, z++) {
 				if (getField(lastMoveX, y, z) == lastM) {
@@ -349,6 +357,7 @@ public class Board {
 						return true;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
@@ -372,6 +381,7 @@ public class Board {
 						return true;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
@@ -395,6 +405,7 @@ public class Board {
 						return true;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
@@ -418,6 +429,7 @@ public class Board {
 						return true;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
@@ -434,6 +446,7 @@ public class Board {
 			}
 		}
 		return false;
+
 	}
 
 	// @requires \exists board.Mark != EMP;
@@ -450,6 +463,7 @@ public class Board {
 						return true;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}
@@ -499,6 +513,7 @@ public class Board {
 						return true;
 					}
 				} else {
+					winning = 1;
 					break;
 				}
 			}

@@ -125,6 +125,9 @@ public class Game {
 			current = (current + 1) % 2;
 			update();
 		}
+		System.out.println("The winning move was " + board.lastMoveX + ", " + board.lastMoveY + ", " + board.lastMoveZ);
+		System.out.println("1: " + board.hasRow() + " 2: " + board.hasColumn() + " 3: " + board.hasStack() + " 4: "
+				+ board.has2DDiagonal() + " 5: " + board.has3DDiagonal());
 		printResult();
 	}
 
@@ -143,10 +146,10 @@ public class Game {
 	 * @ requires this.board.isFull() || this.board.hasWinner();
 	 */
 	private void printResult() {
-		if (board.hasWinner()) {
-			System.out.println("Player with mark " + board.lastM + " has won!");
-		} else if (board.isFull()) {
+		if (board.isFull()) {
 			System.out.println("Draw, there is no winner.");
+		} else {
+			System.out.println("Player with mark " + board.lastM + " has won!");
 		}
 	}
 

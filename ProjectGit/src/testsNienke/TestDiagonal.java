@@ -24,62 +24,60 @@ public class TestDiagonal {
 
 	//------- test has winner -----
 	@Test
-	public void testDiagonalZ(){
+	public void testDiagonalLtR(){
 		testBoard.reset();
 		
-		assertFalse(testBoard.hasDiagonal(Mark.XXX));
-		assertFalse(testBoard.hasDiagonal(Mark.OOO));
-		
-		System.out.println(testBoard.lastMoveX);
-		System.out.println(testBoard.lastMoveY);
-		System.out.println(testBoard.lastMoveZ);
-		System.out.println(testBoard.lastM);
-		
-		assertFalse(testBoard.hasDiagonalT(Mark.XXX));
-		assertFalse(testBoard.hasDiagonalT(Mark.OOO));
-		
+		assertFalse(testBoard.has2DDiagonal());
+		testBoard.lastM = testBoard.lastM.other();
+		assertFalse(testBoard.has2DDiagonal());
 		
 		testBoard.setField(0, 0, Mark.OOO);
 		testBoard.setField(1, 1, Mark.OOO);
 		testBoard.setField(2, 2, Mark.XXX);
 		testBoard.setField(3, 3, Mark.OOO);
 		
+		assertFalse(testBoard.has2DDiagonal());
+		testBoard.lastM = testBoard.lastM.other();
+		assertFalse(testBoard.has2DDiagonal());
+		
 		testBoard.setField(0, 0, Mark.OOO);
 		testBoard.setField(1, 1, Mark.OOO);
 		testBoard.setField(3, 3, Mark.OOO);
 		testBoard.setField(2, 2, Mark.OOO);
 		
-		assertFalse(testBoard.hasDiagonal(Mark.XXX));
-		assertTrue(testBoard.hasDiagonal(Mark.OOO));
-		
+		assertTrue(testBoard.has2DDiagonal());		
+		testBoard.lastM = testBoard.lastM.other();
+		assertFalse(testBoard.has2DDiagonal());
+		//testBoard.showBoard();
 	}
 	
 	@Test
-	public void testDiagonalT(){
+	public void test2DDiagonalTRtL(){
 		testBoard.reset();
-		
-//		assertFalse(testBoard.hasDiagonalT(Mark.XXX));
-//		assertFalse(testBoard.hasDiagonalT(Mark.OOO));
-		
 		
 		testBoard.setField(0, 3, Mark.OOO);
 		testBoard.setField(1, 2, Mark.XXX);
 		testBoard.setField(2, 1, Mark.OOO);
 		testBoard.setField(3, 0, Mark.OOO);
 		
+		assertFalse(testBoard.has2DDiagonal());
+		testBoard.lastM = testBoard.lastM.other();
+		assertFalse(testBoard.has2DDiagonal());
+		
 		testBoard.setField(0, 3, Mark.OOO);
 		testBoard.setField(1, 2, Mark.OOO);
 		testBoard.setField(3, 0, Mark.OOO);
 		testBoard.setField(2, 1, Mark.OOO);
 		
-		assertFalse(testBoard.hasDiagonalT(Mark.XXX));
-		assertTrue(testBoard.hasDiagonalT(Mark.OOO));
-		
+		assertTrue(testBoard.has2DDiagonal());
+		testBoard.lastM = testBoard.lastM.other();
+		assertFalse(testBoard.has2DDiagonal());
+		//testBoard.showBoard();
 	}
 
 	
 	@Test
-	public void testDiagonalZ(){
+	public void testDiagonalThroughZIncreasing(){
 		testBoard.reset();
 		
 		testBoard.setField(0, 0, Mark.XXX);
@@ -97,9 +95,37 @@ public class TestDiagonal {
 		testBoard.setField(0, 3, Mark.OOO);
 		testBoard.setField(0, 3, Mark.XXX);
 		
+		//testBoard.showBoard();
+		
+		assertTrue(testBoard.has2DDiagonal());
+		testBoard.lastM = testBoard.lastM.other();
+		assertFalse(testBoard.has2DDiagonal());
+		
+	}
+	@Test
+	public void testDiagonalThroughZDecreasing(){
+		testBoard.reset();
+		
+		testBoard.setField(0, 3, Mark.XXX);
+		
+		testBoard.setField(0, 2, Mark.OOO);
+		testBoard.setField(0, 2, Mark.XXX);
+		
+		testBoard.setField(0, 1, Mark.OOO);
+		testBoard.setField(0, 1, Mark.XXX);
+		testBoard.setField(0, 1, Mark.XXX);
+		
+		
+		testBoard.setField(0, 0, Mark.OOO);
+		testBoard.setField(0, 0, Mark.XXX);
+		testBoard.setField(0, 0, Mark.OOO);
+		testBoard.setField(0, 0, Mark.XXX);
+		
 		testBoard.showBoard();
 		
-		assertTrue(testBoard.hasDiagonalZ(testBoard.lastM));
+		assertTrue(testBoard.has2DDiagonal());
+		testBoard.lastM = testBoard.lastM.other();
+		assertFalse(testBoard.has2DDiagonal());
 		
 	}
 	
