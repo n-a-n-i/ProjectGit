@@ -1,4 +1,4 @@
-package Server2;
+package server2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,10 +12,10 @@ public class StartClient {
 	private static InetAddress host;
 	private static int port;
 	
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		in = new BufferedReader(new InputStreamReader(System.in));
 		
-		try{
+		try {
 			System.out.println("Enter username: ");
 			name = in.readLine();
 			

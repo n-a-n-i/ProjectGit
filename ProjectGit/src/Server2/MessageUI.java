@@ -1,4 +1,4 @@
-package Server2;
+package server2;
 
 /**
  * P2 prac wk4.

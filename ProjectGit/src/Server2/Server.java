@@ -1,6 +1,10 @@
-package Server2;
+package server2;
 
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -31,21 +35,27 @@ public class Server extends Thread {
 	public Socket clientSock;
 	private int clientNO = 100;
 
+	public String clientID;
+	private Map<String, String> clientPreferences;
+	private Map<String, String> gameNames;
+
 	// ---- server capabilities----
 	int amountOfPlayers = 2;
 	int roomSupport = 0;
-	int maxRoomDimensionX = 0;
-	int maxRoomDimensionY = 0;
-	int maxRoomDimensionZ = 0;
+	int maxRoomDimensionX = 10;
+	int maxRoomDimensionY = 10;
+	int maxRoomDimensionZ = 10;
 	int maxLengthToWin = 4;
 	int chatSupport = 0;
 
-	/** Constructs a new Server object */
+	/** Constructs a new Server object. */
 	public Server(String name, int portArg) {
 		this.serverPort = portArg;
 		this.name = name;
 
 		clients = new HashMap<String, ClientHandler>();
+		clientPreferences = new HashMap<String, String>();
+		gameNames = new HashMap<String, String>();
 
 		try {
 			hostAddress = InetAddress.getLocalHost().getHostAddress();
@@ -71,12 +81,15 @@ public class Server extends Thread {
 				Socket socket = serverSock.accept();
 				System.out.println("Connected: " + socket);
 
-				ClientHandler newClient = new ClientHandler(socket);
+				String ID = getID();
 
+				ClientHandler newClient = new ClientHandler(ID, socket);
 				addHandler(newClient);
 
-				System.out.println("New ClientHandler: " + newClient);
-				System.out.println("All clients connected: " + clients);
+				newClient.run();
+
+				System.out.println(clientPreferences);
+
 			}
 		} catch (Exception e) {
 			System.out.println("fout1");
@@ -85,10 +98,14 @@ public class Server extends Thread {
 		}
 	}
 
-	public void serverCapabilities(ClientHandler client) {
-		String capabilities = ("serverCapabilities" + amountOfPlayers + roomSupport + maxRoomDimensionX
-				+ maxRoomDimensionY + maxRoomDimensionZ + maxLengthToWin + chatSupport);
-		client.sendMessage(capabilities);
+	// public void runSetup(ClientHandler newClient){
+	// serverCapabilities(newClient);
+	// }
+
+	public String serverCapabilities() {
+		String capabilities = "serverCapabilities " + amountOfPlayers + " " + roomSupport + " " + maxRoomDimensionX
+				+ " " + maxRoomDimensionY + " " + maxRoomDimensionZ + " " + maxLengthToWin + " " + chatSupport;
+		return capabilities;
 	}
 
 	/**
@@ -99,11 +116,16 @@ public class Server extends Thread {
 	 *            message that is send
 	 */
 	public void broadcast(String msg) {
-
 		for (Map.Entry<String, ClientHandler> clients : clients.entrySet()) {
 			ClientHandler send = clients.getValue();
 			send.sendMessage(msg);
 		}
+	}
+
+	public String getID() {
+		clientNO++;
+		String clientID = "C-" + Integer.toString(clientNO);
+		return clientID;
 	}
 
 	/**
@@ -114,10 +136,8 @@ public class Server extends Thread {
 	 */
 	public void addHandler(ClientHandler handler) {
 		if (!clients.containsValue(handler)) {
-			System.out.println(clientNO);
 			clientNO++;
-			System.out.println(clientNO);
-			String clientID = "C-" + Integer.toString(clientNO);
+			clientID = "C-" + Integer.toString(clientNO);
 			clients.put(clientID, handler);
 		} else {
 			// TODO: throw exception
@@ -140,4 +160,52 @@ public class Server extends Thread {
 			// TODO: throw exception clienthandler not in the list
 		}
 	}
+
+	public void mapPreferences(String clientID, String clientPref) {
+		String[] parts = clientPref.split(" ");
+
+		String clientNames = parts[2];
+		String gamePrefs = parts[1] + " " + parts[3] + " " + parts[4] + " " + parts[5] + " " + parts[6] + " " + parts[7]
+				+ " " + parts[8];
+
+		for (Map.Entry<String, String> entry : clientPreferences.entrySet()) {
+			System.out.println("checking other preferences");
+
+			System.out.println(gamePrefs);
+			System.out.println(entry.getValue());
+
+			if (entry.getValue().equals(gamePrefs)) {
+				System.out.println("preferences are the same");
+				String player1 = clientID;
+				String player2 = entry.getKey();
+
+				clientPreferences.remove(player2);
+				startGame(player1, player2, gamePrefs);
+			}
+		}
+
+		if (!clientPreferences.containsKey(clientID)) {
+			clientPreferences.put(clientID, gamePrefs);
+			gameNames.put(clientID, clientNames);
+		} else {
+			System.out.println("Something went wrong trying to add preferences to the map.");
+		}
+	}
+
+	public void startGame(String p1, String p2, String gamePrefs) {
+		System.out.println("Setting up a game for " + p1 + " and " + p2 + " with game preferences " + gamePrefs);
+		
+		clients.get(p1).sendMessage("Setting up a game of connect four against " + p2);
+		clients.get(p2).sendMessage("Setting up a game of connect four against " + p1);
+		
+		String name1 = gameNames.get(p1);
+		String name2 = gameNames.get(p2);
+
+		String[] parts = gamePrefs.split(" ");
+
+		int dim = Integer.parseInt(parts[1]);
+
+		project.ConnectFour.main(name1, name2, dim); //werkt nog niet ivm args[]
+	}
+
 }

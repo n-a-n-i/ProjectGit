@@ -65,6 +65,7 @@ public class Game {
 	 * the user does not want to play anymore.
 	 */
 	public void start() {
+		System.out.println("A game of Connect Four has started");
 		boolean doorgaan = true;
 		while (doorgaan) {
 			reset();
