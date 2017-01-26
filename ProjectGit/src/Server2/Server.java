@@ -59,7 +59,7 @@ public class Server extends Thread {
 
 		try {
 			hostAddress = InetAddress.getLocalHost().getHostAddress();
-			System.out.println("Sever has started on IP-address: " + hostAddress);
+			System.out.println("Sever has started on IP-address: " + hostAddress + " and local port: " + portArg);
 		} catch (UnknownHostException e) {
 			// TODO throw unknow hostexception
 			System.out.println("Invalid local address: " + hostAddress);
@@ -71,24 +71,22 @@ public class Server extends Thread {
 	 * to connect. For every new socket connection a new ClientHandler thread is
 	 * started that takes care of the further communication with the Client.
 	 */
-	public void run() {
+	public synchronized void run() {
 
 		try {
-			System.out.println("Waiting...");
 			serverSock = new ServerSocket(serverPort);
 
 			while (true) {
-				Socket socket = serverSock.accept();
-				System.out.println("Connected: " + socket);
+				System.out.println("Waiting for clients to connect...");
 
-				String ID = getID();
+				Socket clientSocket = serverSock.accept();
+				System.out.println("Connected: " + clientSocket);
 
-				ClientHandler newClient = new ClientHandler(ID, socket);
-				addHandler(newClient);
+				this.clientID = getID();
 
-				newClient.run();
+				ClientHandler newClient = new ClientHandler(this.clientID, clientSocket);
 
-				System.out.println(clientPreferences);
+				newClient.start();
 
 			}
 		} catch (Exception e) {
@@ -98,11 +96,7 @@ public class Server extends Thread {
 		}
 	}
 
-	// public void runSetup(ClientHandler newClient){
-	// serverCapabilities(newClient);
-	// }
-
-	public String serverCapabilities() {
+	public synchronized String serverCapabilities() {
 		String capabilities = "serverCapabilities " + amountOfPlayers + " " + roomSupport + " " + maxRoomDimensionX
 				+ " " + maxRoomDimensionY + " " + maxRoomDimensionZ + " " + maxLengthToWin + " " + chatSupport;
 		return capabilities;
@@ -115,7 +109,7 @@ public class Server extends Thread {
 	 * @param msg
 	 *            message that is send
 	 */
-	public void broadcast(String msg) {
+	public synchronized void broadcast(String msg) {
 		for (Map.Entry<String, ClientHandler> clients : clients.entrySet()) {
 			ClientHandler send = clients.getValue();
 			send.sendMessage(msg);
@@ -134,11 +128,9 @@ public class Server extends Thread {
 	 * @param handler
 	 *            ClientHandler that will be added
 	 */
-	public void addHandler(ClientHandler handler) {
+	public synchronized void addHandler(ClientHandler handler) {
 		if (!clients.containsValue(handler)) {
-			clientNO++;
-			clientID = "C-" + Integer.toString(clientNO);
-			clients.put(clientID, handler);
+			clients.put(this.clientID, handler);
 		} else {
 			// TODO: throw exception
 			System.out.println("This ClientHandler allready exists.");
@@ -151,7 +143,7 @@ public class Server extends Thread {
 	 * @param handler
 	 *            ClientHandler that will be removed
 	 */
-	public void removeHandler(ClientHandler handler) {
+	public synchronized void removeHandler(ClientHandler handler) {
 
 		if (clients.containsValue(handler)) {
 			clients.remove(handler);
@@ -168,22 +160,6 @@ public class Server extends Thread {
 		String gamePrefs = parts[1] + " " + parts[3] + " " + parts[4] + " " + parts[5] + " " + parts[6] + " " + parts[7]
 				+ " " + parts[8];
 
-		for (Map.Entry<String, String> entry : clientPreferences.entrySet()) {
-			System.out.println("checking other preferences");
-
-			System.out.println(gamePrefs);
-			System.out.println(entry.getValue());
-
-			if (entry.getValue().equals(gamePrefs)) {
-				System.out.println("preferences are the same");
-				String player1 = clientID;
-				String player2 = entry.getKey();
-
-				clientPreferences.remove(player2);
-				startGame(player1, player2, gamePrefs);
-			}
-		}
-
 		if (!clientPreferences.containsKey(clientID)) {
 			clientPreferences.put(clientID, gamePrefs);
 			gameNames.put(clientID, clientNames);
@@ -192,20 +168,65 @@ public class Server extends Thread {
 		}
 	}
 
-	public void startGame(String p1, String p2, String gamePrefs) {
+	public boolean checkMatch(String client, String prefs) {
+		boolean match = false;
+
+		for (Map.Entry<String, String> entry : clientPreferences.entrySet()) {
+			if (entry.getValue().equals(prefs) && !entry.getKey().equals(client)) {
+				String player1 = client;
+				String player2 = entry.getKey();
+
+				// System.out.println("Found a match!");
+				// System.out.println(player1);
+				// System.out.println(player2);
+				// System.out.println(clients);
+
+				clients.get(player1).hasMatch = true;
+				clients.get(player2).hasMatch = true;
+
+				clientPreferences.remove(player1);
+				clientPreferences.remove(player2);
+				startGame(player1, player2, prefs);
+			}
+		}
+		return match;
+	}
+
+	public synchronized void startGame(String p1, String p2, String gamePrefs) {
 		System.out.println("Setting up a game for " + p1 + " and " + p2 + " with game preferences " + gamePrefs);
-		
+
 		clients.get(p1).sendMessage("Setting up a game of connect four against " + p2);
 		clients.get(p2).sendMessage("Setting up a game of connect four against " + p1);
-		
-		String name1 = gameNames.get(p1);
-		String name2 = gameNames.get(p2);
 
 		String[] parts = gamePrefs.split(" ");
-
 		int dim = Integer.parseInt(parts[1]);
 
-		project.ConnectFour.main(name1, name2, dim); //werkt nog niet ivm args[]
+		String roomDimensionX = parts[1];
+		String roomDimensionY = parts[2];
+		String roomDimensionZ = parts[3];
+		
+		String playerID1 = p1;
+		String playerName1 = gameNames.get(p1);
+		String playerColour1 = "0000ff";
+		
+		String playerID2 = p2;
+		String playerName2 = gameNames.get(p2);
+		String playerColour2 = "ff1a00";
+		
+		
+		String output = "startGame " + roomDimensionX + "|" + roomDimensionY + "|" + 
+				roomDimensionZ + "|" + playerID1 + "|" + playerName1 + "|" + playerColour1 +
+				" " + playerID2 + "|" + playerName2 + "|" + playerColour2;   
+
+		clients.get(p1).sendMessage(output);
+		clients.get(p2).sendMessage(output);
+		
+		projectServer.ConnectFour.main(playerName1, playerName2, dim);
+
 	}
+
+
+	
+	
 
 }

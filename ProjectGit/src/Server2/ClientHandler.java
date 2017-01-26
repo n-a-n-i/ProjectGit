@@ -26,17 +26,21 @@ public class ClientHandler extends Thread {
 
 	public Socket clientSock;
 
+	public boolean hasMatch;
+
 	/**
 	 * Constructs a ClientHandler object Initialises both Data streams. @
 	 * requires server != null && sock != null;
 	 */
 	public ClientHandler(String clientID, Socket sockArg) throws IOException {
+		System.out.println("Setting up a client handler.");
 		this.clientID = clientID;
 		clientSock = sockArg;
 
-		in = new DataInputStream(clientSock.getInputStream());
 		out = new DataOutputStream(clientSock.getOutputStream());
+		in = new DataInputStream(clientSock.getInputStream());
 
+		runSetup();
 	}
 
 	/**
@@ -46,18 +50,33 @@ public class ClientHandler extends Thread {
 	 * thrown while reading the message, the method concludes that the socket
 	 * connection is broken and shutdown() will be called.
 	 */
-	public void runSetup() {
+	public synchronized void runSetup() {
 		try {
 
 			out.writeUTF(StartServer.connectFourServer.serverCapabilities());
 			System.out.println("Waiting for client preferences...");
 
 			String clientPrefs = in.readUTF();
-			System.out.println(clientID + "has preferences: " + clientPrefs);
+			System.out.println(clientID + " has preferences: " + clientPrefs);
 
 			StartServer.connectFourServer.mapPreferences(clientID, clientPrefs);
-			
-			runGame();
+
+			String[] parts = clientPrefs.split(" ");
+
+			String gamePrefs = parts[1] + " " + parts[3] + " " + parts[4] + " " + parts[5] + " " + parts[6] + " "
+					+ parts[7] + " " + parts[8];
+
+
+			StartServer.connectFourServer.addHandler(this);
+			StartServer.connectFourServer.checkMatch(clientID, gamePrefs);
+
+//			String game = in.readUTF();
+//			
+//			if (game.contains("startGame")) {
+//				System.out.println("Hier3?");
+//				out.writeBoolean(hasMatch);
+//				runGame();
+//			}
 
 		} catch (Exception e) {
 			// TODO: throw exception
@@ -68,6 +87,7 @@ public class ClientHandler extends Thread {
 	}
 
 	public void runGame() {
+		System.out.println("Hier?");
 		String line = null;
 
 		try {
@@ -76,10 +96,10 @@ public class ClientHandler extends Thread {
 			}
 		} catch (IOException e) {
 			System.out.println("Something went wrong while reading from socket. " + "Turning off connection.");
+			e.printStackTrace();
 			this.shutdown();
 		}
 	}
-
 
 	/**
 	 * This method can be used to send a message over the socket connection to
@@ -98,7 +118,6 @@ public class ClientHandler extends Thread {
 
 		// TODO Add implementation
 	}
-
 
 	/**
 	 * This ClientHandler signs off from the Server and subsequently sends a

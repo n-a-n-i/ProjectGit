@@ -12,19 +12,19 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-
 /**
  * P2 prac wk4. <br>
- * Client. 
- * @author  Theo Ruys
+ * Client.
+ * 
+ * @author Theo Ruys
  * @version 2005.02.21
  */
 public class Client extends Thread {
 	private String clientName;
 	private Socket sock;
-//	private BufferedReader in;
-//	private BufferedWriter out;
-	
+	// private BufferedReader in;
+	// private BufferedWriter out;
+
 	static DataInputStream in;
 	static DataOutputStream out;
 	public InetAddress address;
@@ -32,31 +32,39 @@ public class Client extends Thread {
 	/**
 	 * Constructs a Client-object and tries to make a socket connection
 	 */
-	public Client(String name, InetAddress host, int port)
-			throws IOException {
+	public Client(String name, InetAddress host, int port) throws IOException {
 
 		try {
-            sock = new Socket(host, port);
-            clientName = name;
-            in = new DataInputStream(sock.getInputStream());
-            
-//            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-//    		out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-    		
-    		System.out.println("Waiting for server capabilities.");
-    		String serverCapabilities = in.readUTF();
-    		System.out.println(serverCapabilities);
-    		
-    		out = new DataOutputStream(sock.getOutputStream());
-    		out.writeUTF(sendPreferences(serverCapabilities));
-            
-    		runGame();
-    		
-        } catch (IOException e) {
-            System.out.println("ERROR: could not create a socket on " + host
-                    + " and port " + port);
-        }
-		
+			sock = new Socket(host, port);
+			clientName = name;
+			in = new DataInputStream(sock.getInputStream());
+
+			// in = new BufferedReader(new
+			// InputStreamReader(sock.getInputStream()));
+			// out = new BufferedWriter(new
+			// OutputStreamWriter(sock.getOutputStream()));
+
+			System.out.println("Waiting for server capabilities.");
+			String serverCapabilities = in.readUTF();
+			
+			System.out.println(serverCapabilities);
+
+			out = new DataOutputStream(sock.getOutputStream());
+			out.writeUTF(sendPreferences(serverCapabilities));
+
+			runGame();
+			
+			String game = in.readUTF();
+			
+			if (game.contains("startGame")) {
+				System.out.println("Hier3?");
+				runGame();
+			}
+
+		} catch (IOException e) {
+			System.out.println("ERROR: could not create a socket on " + host + " and port " + port);
+		}
+
 	}
 
 	/**
@@ -64,24 +72,38 @@ public class Client extends Thread {
 	 * Each message will be forwarded to the MessageUI
 	 */
 	public void runGame() {
-		String line = null;
-		
-		try {
-			while ((line = in.readUTF()) != null) {
-				System.out.println(line);
+		try{
+			while (true) {
+				boolean hasGame = in.readBoolean();
+				if (hasGame){
+					
+				}
 			}
-		} catch (IOException e) {
-			System.out.println("Something went wrong while reading from socket. "
-					+ "Turning off connection.");
-			shutdown();
+		}catch (Exception e){
+			
 		}
-	}
-	
-	public String sendPreferences(String serverCapabilities){
-		Scanner prefs = new Scanner(System.in);
 		
-		//TODO: compare with serverCapabilities and give errors if values are out of bounds.
-		System.out.println("Enter your game preferences. Make sure your preferences fit within the server capabilities!");
+		
+//		String line = null;
+//		
+//		try {
+//			while ((line = in.readUTF()) != null) {
+//				System.out.println(line);
+//			}
+//		} catch (IOException e) {
+//			System.out.println("Something went wrong while reading from socket. "
+//					+ "Turning off connection.");
+//			shutdown();
+//		}
+	}
+
+	public String sendPreferences(String serverCapabilities) {
+		Scanner prefs = new Scanner(System.in);
+
+		// TODO: compare with serverCapabilities and give errors if values are
+		// out of bounds.
+		System.out
+				.println("Enter your game preferences. Make sure your preferences fit within the server capabilities!");
 		System.out.println("With how many players do you want to play?");
 		String players = prefs.nextLine();
 		System.out.println("What is your game name? (Don't use spaces!)");
@@ -100,24 +122,20 @@ public class Client extends Thread {
 		String maxLengthToWin = prefs.nextLine();
 		System.out.println("Do you support chats? Yes = 1, No = 0");
 		String chatSupport = prefs.nextLine();
-		
-		String preferences = "sendCapabilities " + players + " " + name + " " + roomSupport + 
-				" " + maxRoomDimensionX + " " + maxRoomDimensionY + " " + maxRoomDimensionZ +
-				" " + maxLengthToWin + " " + chatSupport;
-		
+
+		String preferences = "sendCapabilities " + players + " " + name + " " + roomSupport + " " + maxRoomDimensionX
+				+ " " + maxRoomDimensionY + " " + maxRoomDimensionZ + " " + maxLengthToWin + " " + chatSupport;
+
 		System.out.println("You are sending these preferences to the server: " + preferences);
-		
+
 		return preferences;
 	}
 
-	
 	/** send a message to a ClientHandler. */
 	public void sendMessage(String msg) {
 		// TODO Add implementation
 	}
 
-	
-	
 	/** close the socket connection. */
 	public void shutdown() {
 		// TODO Add implementation
