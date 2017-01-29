@@ -32,6 +32,7 @@ public class Board {
 	}
 
 	public void showBoard() {
+		System.out.println("showing board via Board");
 		StringBuilder numbers = new StringBuilder();
 		for (int z = 0; z < dim; z++) {
 			numbers.append("  |");
@@ -150,6 +151,7 @@ public class Board {
 	 * == Mark.OOO;
 	 */
 	public void setField(int row, int col, Mark m) {
+		System.out.println("We plaatsen een mark");
 		int z = firstEmptyField(row, col);
 		board[row][col][z] = m;
 

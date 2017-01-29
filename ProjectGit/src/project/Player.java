@@ -5,7 +5,7 @@ public abstract class Player {
 	// -- Instance variables -----------------------------------------
 
 	protected String name;
-	private Mark mark;
+	protected Mark mark;
 
 	// -- Constructors -----------------------------------------------
 
@@ -28,16 +28,16 @@ public abstract class Player {
 	 * Returns the name of the player.
 	 */
 	/* @ pure */ public String getName() {
-		return name;
+		return this.name;
 	}
 
-	/**
-	 * Returns the mark of the player.
-	 */
-	// @ensures mark == Mark.OOO || mark == Mark.XXX || mark == Mark.EMP;
-	/* @ pure */ public Mark getMark() {
-		return mark;
-	}
+//	/**
+//	 * Returns the mark of the player.
+//	 */
+//	// @ensures mark == Mark.OOO || mark == Mark.XXX || mark == Mark.EMP;
+//	/* @ pure */ public Mark getMark() {
+//		return mark;
+//	}
 
 	/*
 	 * @ requires board != null & !board.isFull(); ensures
@@ -51,25 +51,10 @@ public abstract class Player {
 	 *            the current game board
 	 * @return the player's choice
 	 */
-	public abstract int[] determineMove(Board board);
+	public abstract int getMoveX(Game game, Mark m);
 
-	// -- Commands ---------------------------------------------------
+	public abstract int getMoveY(Game game, Mark m);
 
-	/*
-	 * @ requires board != null & !board.isFull();
-	 */
-	/**
-	 * Makes a move on the board. <br>
-	 * 
-	 * @param board
-	 *            the current board
-	 */
-	public void makeMove(Board board) {
-		int[] move = determineMove(board);
-		int choiceX = move[0];
-		int choiceY = move[1];
-		board.setField(choiceX, choiceY, getMark());
-
-	}
+	public abstract Mark getMark();
 
 }
