@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+/**
+ * ConnectFour over a Server project Game.
+ * 
+ * @author Nienke Huitink & Lex Favrin
+ * @version 2017.01.26
+ */
 public class Game {
 	// -- Instance variables -----------------------------------------
 
@@ -126,9 +132,6 @@ public class Game {
 			current = (current + 1) % 2;
 			update();
 		}
-		System.out.println("The winning move was " + board.lastMoveX + ", " + board.lastMoveY + ", " + board.lastMoveZ);
-		System.out.println("1: " + board.hasRow() + " 2: " + board.hasColumn() + " 3: " + board.hasStack() + " 4: "
-				+ board.has2DDiagonal() + " 5: " + board.has3DDiagonal());
 		printResult();
 	}
 
@@ -150,7 +153,10 @@ public class Game {
 		if (board.isFull()) {
 			System.out.println("Draw, there is no winner.");
 		} else {
-			System.out.println("Player with mark " + board.lastM + " has won!");
+			System.out.println(players[(current + 1) % 2].getName() + 
+					" with mark " + board.lastM + " has won!");
+			System.out.println("The winning move was " + "(" + board.lastMoveX + ", " 
+					+ board.lastMoveY + ", " + board.lastMoveZ + ")");
 		}
 	}
 

@@ -5,7 +5,7 @@ import java.util.Scanner;
 /**
  * Class for maintaining a human player in Tic Tac Toe. Module 2 lab assignment
  * 
- * @author Theo Ruys
+ * @author Theo Ruys, with adaptions from Nienke Huitink & Lex Favrin
  * @version $Revision: 1.4 $
  */
 public class HumanPlayer extends Player {
@@ -23,7 +23,6 @@ public class HumanPlayer extends Player {
 	public HumanPlayer(String name, Mark mark) {
 		super(name, mark);
 	}
-
 	// -- Commands ---------------------------------------------------
 
 	/*
@@ -51,15 +50,14 @@ public class HumanPlayer extends Player {
 			String promptY = "> " + this.getName() + " (" + getMark().toString() + ")"
 					+ ", which column do you want to choose? ";
 			choiceY = readInt(promptY);
-
-			valid = board.isEmptyField(choiceX, choiceY, board.firstEmptyField(choiceX, choiceY));
-
-			if (valid) {
+			
+			if (!(0 <= choiceX && choiceX < board.dim) || !(0 <= choiceY && choiceY < board.dim) ||
+					board.firstEmptyField(choiceX, choiceY) == -1) {
+				System.out.println("ERROR: field " + choiceX + ", " + choiceY + " is no valid choice.");
+			} else {
 				choices[0] = choiceX;
 				choices[1] = choiceY;
-				break;
-			} else {
-				System.out.println("ERROR: field " + choiceX + ", " + choiceY + " is no valid choice.");
+				valid = true;
 			}
 		}
 		return choices;
@@ -74,8 +72,8 @@ public class HumanPlayer extends Player {
 	 * @return the first int value which is entered by the user
 	 */
 	/*
-	 * @ requires prompt != null; ensures \result >= 0; 
-	 * ensures \result < board.dim;
+	 * @ requires prompt != null; ensures \result >= 0; ensures \result <
+	 * board.dim;
 	 */
 	private int readInt(String prompt) {
 		int value = 0;

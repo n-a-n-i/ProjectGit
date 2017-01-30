@@ -1,5 +1,10 @@
 package project;
-
+/**
+ * ConnectFour over a Server project
+ * Board 
+ * @author  Nienke Huitink & Lex Favrin, based on original code by Theo Ruys
+ * @version 2017.01.26
+ */
 public enum Mark {
     EMP, XXX, OOO;
 
