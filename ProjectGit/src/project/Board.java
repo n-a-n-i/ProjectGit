@@ -2,8 +2,9 @@ package project;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 
-public class Board {
+public class Board extends Observable{
 
 	private Mark[][][] board;
 	public int dim;
@@ -31,6 +32,58 @@ public class Board {
 		}
 	}
 
+	public String toString(){
+		//TODO: zorgen dat hij alles print
+
+		StringBuilder numbers = new StringBuilder();
+		for (int z = 0; z < dim; z++) {
+			numbers.append("  |");
+			for (int i = 0; i < dim; i++) {
+				if (i == dim - 1) {
+					numbers.append("  " + i + " ");
+				} else {
+					numbers.append("  " + i + "  ");
+				}
+			}
+		}
+		String number = numbers.toString();
+		System.out.println(number);
+
+		for (int x = 0; x < dim; x++) {
+			System.out.printf("%d | ", x);
+			for (int z = 0; z < dim; z++) {
+				for (int y = 0; y < dim; y++) {
+					System.out.printf("%s  ", board[x][y][z]);
+				}
+				System.out.printf("| ");
+			}
+			System.out.printf("\n");
+			String board;
+//			board.format(%s%n, args)
+		}
+
+		StringBuilder layers = new StringBuilder();
+		StringBuilder spaces = new StringBuilder();
+
+		layers.append("  |");
+		for (int i = 0; i < ((dim * 5) - 10) / 2; i++) {
+			spaces.append(" ");
+		}
+		for (int z = 0; z < dim; z++) {
+			if ((dim % 2) == 0) {
+				layers.append(spaces + "  layer " + z + spaces + "  |");
+			} else {
+				layers.append(spaces + "  layer " + z + spaces + "   |");
+			}
+		}
+		String layer = layers.toString();
+		System.out.println(layer);
+		
+		String string = String.format("%s%n%s%n", number, layer);
+		return string;
+	}
+	
+	
 	public void showBoard() {
 		System.out.println("showing board via Board");
 		StringBuilder numbers = new StringBuilder();

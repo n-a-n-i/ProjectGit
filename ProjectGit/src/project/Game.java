@@ -77,33 +77,6 @@ public class Game extends Observable {
 	}
 	
 	/**
-	 * Returns the current Player
-	 */
-	public Player getPlayer() {
-		System.out.println("getting players");
-		return this.players[current];
-	}
-	
-	public void switchPlayer() {
-		current = (current + 1) % 2;
-	}
-	
-	/**
-	 * 
-	 */
-	public void move() {
-		int moveX = getPlayer().getMoveX(this, getPlayer().getMark());
-		int moveY = getPlayer().getMoveY(this, getPlayer().getMark());
-		
-		if (getBoard().isEmptyField(moveX, moveY, getBoard().firstEmptyField(moveX, moveY))){
-			getBoard().setField(moveX, moveY, getPlayer().getMark());
-		} else {
-			// TODO: wrong move exception?
-		}
-	}
-	
-
-	/**
 	 * Resets the game. <br>
 	 * The board is emptied and player[0] becomes the current player.
 	 */
@@ -112,43 +85,87 @@ public class Game extends Observable {
 		board.reset();
 	}
 
-
+	
 	/**
-	 * Prints the game situation.
+	 * Returns the current Player
 	 */
-	private void update() {
-		System.out.println("\ncurrent game situation: \n\n");
-		board.showBoard();
+	public Player getCurrent() {
+		System.out.println("getting players");
+		return this.players[current];
 	}
-
+	
 	/**
-	 * Prints the result of the last game. <br>
+	 * 
+	 * @return
 	 */
+	public void changeCurrent(){
+		current = (current + 1) % NUMBER_PLAYERS;
+	}
+	
 	/*
-	 * @ requires this.board.isFull() || this.board.hasWinner();
+	 * 
 	 */
-	private void printResult() {
-		if (board.isFull()) {
-			System.out.println("Draw, there is no winner.");
-		} else {
-			System.out.println("Player with mark " + board.lastM + " has won!");
-		}
-	}
-
-	
-	
-	
-	/**
-	 * Starts a game of connect four.
-	 * Gives the current player a turn to place a mark and switches the player turns.
-	 */
-	public void startGame() {
-//		System.out.println("A game of Connect Four has started");
-		move();
-		while (!board.isFull() && !!board.hasWinner()) {
-			changePlayer();
-			move();
-		}
+	public Player[] getPlayers() {
+		return players;
 	}
 	
+//	public void switchPlayer() {
+//		current = (current + 1) % 2;
+//	}
+//	
+//	/**
+//	 * 
+//	 */
+//	public void move() {
+//		int moveX = getPlayer().getMoveX(this, getPlayer().getMark());
+//		int moveY = getPlayer().getMoveY(this, getPlayer().getMark());
+//		
+//		if (getBoard().isEmptyField(moveX, moveY, getBoard().firstEmptyField(moveX, moveY))){
+//			getBoard().setField(moveX, moveY, getPlayer().getMark());
+//		} else {
+//			// TODO: wrong move exception?
+//		}
+//	}
+//	
+//
+//	
+//
+//	/**
+//	 * Prints the game situation.
+//	 */
+//	private void update() {
+//		System.out.println("\ncurrent game situation: \n\n");
+//		board.showBoard();
+//	}
+//
+//	/**
+//	 * Prints the result of the last game. <br>
+//	 */
+//	/*
+//	 * @ requires this.board.isFull() || this.board.hasWinner();
+//	 */
+//	private void printResult() {
+//		if (board.isFull()) {
+//			System.out.println("Draw, there is no winner.");
+//		} else {
+//			System.out.println("Player with mark " + board.lastM + " has won!");
+//		}
+//	}
+//
+//	
+//	
+//	
+//	/**
+//	 * Starts a game of connect four.
+//	 * Gives the current player a turn to place a mark and switches the player turns.
+//	 */
+//	public void startGame() {
+////		System.out.println("A game of Connect Four has started");
+//		move();
+//		while (!board.isFull() && !!board.hasWinner()) {
+//			changePlayer();
+//			move();
+//		}
+//	}
+//	
 }
