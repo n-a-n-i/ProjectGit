@@ -46,7 +46,7 @@ public class Board extends Observable{
 
 	public String toString(){
 		//TODO: zorgen dat hij alles print
-
+		StringBuilder boardbuilder = new StringBuilder();
 		StringBuilder numbers = new StringBuilder();
 		for (int z = 0; z < dim; z++) {
 			numbers.append("  |");
@@ -59,18 +59,17 @@ public class Board extends Observable{
 			}
 		}
 		String number = numbers.toString();
-		System.out.println(number);
-
 		for (int x = 0; x < dim; x++) {
 			System.out.printf("%d | ", x);
 			for (int z = 0; z < dim; z++) {
 				for (int y = 0; y < dim; y++) {
-					System.out.printf("%s  ", board[x][y][z]);
+					boardbuilder.append("%s  ");
+					boardbuilder.append(board[x][y][z]).toString();
 				}
-				System.out.printf("| ");
+				boardbuilder.append("| ");
 			}
-			System.out.printf("\n");
-			String board;
+			boardbuilder.append("\n");
+			//String board;
 //			board.format(%s%n, args)
 		}
 
@@ -89,10 +88,11 @@ public class Board extends Observable{
 			}
 		}
 		String layer = layers.toString();
-		System.out.println(layer);
 		
 		String string = String.format("%s%n%s%n", number, layer);
-		return string;
+		boardbuilder.append(string);
+		String boardString = String.format("%s%n%s%n", boardbuilder);
+		return boardString;
 	}
 	
 	
