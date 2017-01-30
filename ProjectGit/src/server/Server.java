@@ -211,12 +211,13 @@ public class Server extends Thread implements ProtocolConstants, ProtocolControl
 			if (client.getValue().equals(preferences) && client.getKey() != id) {
 				String[] prefs = preferences.split(" ");
 				int dim = Integer.parseInt(prefs[2]);
+				int oID = client.getKey();
 				
 				ClientHandler h0 = clients.get(id);
-				ClientHandler h1 = clients.get(client.getKey());
+				ClientHandler h1 = clients.get(oID);
 				// get player names
-				String n0 = h0.getClientName();
-				String n1 = h1.getClientName();
+				String n0 = gameNames.get(id);
+				String n1 = gameNames.get(oID);
 				// get players
 				Player p0 = new Player(n0);
 				Player p1 = new Player(n1);

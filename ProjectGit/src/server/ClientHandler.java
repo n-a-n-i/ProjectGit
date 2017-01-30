@@ -183,23 +183,22 @@ public class ClientHandler extends Thread implements ProtocolConstants, Protocol
 	/**
 	 * 
 	 */
-	public void addPreferences(String prefs){
+	public void addPreferences(String prefs) {
 		System.out.println("Komen we hier langs?");
-		 String[] parts = prefs.split(" ");
-		
-		 String clientNames = parts[2];
-		 preferences = parts[1] + " " + parts[3] + " " + parts[4] + " " +
-		 parts[5] + " "
-		 + parts[6] + " " + parts[7] + " " + parts[8];
-		 
-		 if (!server.clientPreferences.containsKey(pID)){
-			 server.clientPreferences.put(pID, preferences);
-			 server.gameNames.put(pID, clientNames);
-			 System.out.println(server.clientPreferences);
-		 } else {
-			 //TODO: cannot add clientpreferences
-		 }
-		
+		String[] parts = prefs.split(" ");
+
+		String clientNames = parts[2];
+		preferences = parts[1] + " " + parts[3] + " " + parts[4] + " " + parts[5] + " " + parts[6] + " " + parts[7]
+				+ " " + parts[8];
+
+		if (!server.clientPreferences.containsKey(pID)) {
+			server.clientPreferences.put(pID, preferences);
+			server.gameNames.put(pID, clientNames);
+			System.out.println(server.clientPreferences);
+		} else {
+			// TODO: cannot add clientpreferences
+		}
+
 	}
 
 	/**

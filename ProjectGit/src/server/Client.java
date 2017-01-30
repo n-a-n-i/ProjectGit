@@ -273,7 +273,7 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 	// @ ensures getIsCurrentPlayer() == true || getIsCurrentPlayer() == false;
 	// @ ensures getClientName() == username;
 	private void acceptRequest(String markArg) {
-		if (markArg.equals(yellow)) {
+		if (markArg.equals("XXX")) {
 			isCurrentPlayer = true;
 			myMark = Mark.XXX;
 			// clientName = username;
