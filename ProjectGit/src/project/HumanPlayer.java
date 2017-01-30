@@ -1,6 +1,11 @@
 package project;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
+
+import server.Client;
 
 /**
  * Class for maintaining a human player in Tic Tac Toe. Module 2 lab assignment
@@ -9,6 +14,8 @@ import java.util.Scanner;
  * @version $Revision: 1.4 $
  */
 public class HumanPlayer extends Player {
+	
+	private Client client;
 
 	// -- Constructors -----------------------------------------------
 
@@ -20,8 +27,9 @@ public class HumanPlayer extends Player {
 	 * Creates a new human player object.
 	 * 
 	 */
-	public HumanPlayer(String name, Mark mark) {
+	public HumanPlayer(String name, Mark mark, Client client) {
 		super(name, mark);
+		this.client = client;
 	}
 	// -- Commands ---------------------------------------------------
 
@@ -42,23 +50,62 @@ public class HumanPlayer extends Player {
 		int[] choices = new int[2];
 		int choiceX = 0;
 		int choiceY = 0;
-		while (!valid) {
+		
+//		BufferedReader inMove = new BufferedReader(new InputStreamReader(System.in));
+		
+		while (!valid) {	
 			String promptX = "> " + getName() + " (" + getMark().toString() + ")"
 					+ ", which row do you want to choose? ";
-			choiceX = readInt(promptX);
-
+			client.sendMessage(promptX);
+			
+			
 			String promptY = "> " + this.getName() + " (" + getMark().toString() + ")"
 					+ ", which column do you want to choose? ";
-			choiceY = readInt(promptY);
+			client.sendMessage(promptY);
 			
-			if (!(0 <= choiceX && choiceX < board.dim) || !(0 <= choiceY && choiceY < board.dim) ||
+			valid = board.isEmptyField(choiceX, choiceY, board.firstEmptyField(choiceX, choiceY));
+			
+			if(!valid){
+				System.out.println("Error: field " + choiceX + " " + choiceY + " is not a valid choice");
+			} else {
+				choices[0] = choiceX;
+				choices[1] = choiceY;
+				break;
+			}
+			//choiceY = readInt(promptY);
+			
+		/*	if (!(0 <= choiceX && choiceX < board.dim) || !(0 <= choiceY && choiceY < board.dim) ||
 					board.firstEmptyField(choiceX, choiceY) == -1) {
 				System.out.println("ERROR: field " + choiceX + ", " + choiceY + " is no valid choice.");
 			} else {
 				choices[0] = choiceX;
 				choices[1] = choiceY;
 				valid = true;
-			}
+			}*/
+			
+//			try {
+//				String promptX = "> " + getName() + " (" + getMark().toString() + ")"
+//						+ ", which row do you want to choose? ";
+//				System.out.println(promptX);
+//				choiceX = inMove.read();
+//
+//				String promptY = "> " + this.getName() + " (" + getMark().toString() + ")"
+//						+ ", which column do you want to choose? ";
+//				System.out.println(promptY);
+//				choiceY = inMove.read();
+////				choiceY = in.nextInt();
+////				choiceY = readInt(promptY);
+//
+//				valid = board.isEmptyField(choiceX, choiceY, board.firstEmptyField(choiceX, choiceY));
+//
+//				if (valid) {
+//					choices[0] = choiceX;
+//					choices[1] = choiceY;
+//					break;
+//				}
+//			} catch (IOException e) {
+//				System.out.println("Could not read move.");
+//			}
 		}
 		return choices;
 	}
@@ -90,6 +137,23 @@ public class HumanPlayer extends Player {
 			}
 		} while (!intRead);
 		return value;
+	}
+
+	@Override
+	public int getMoveX(Game game, Mark m) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getMoveY(Game game, Mark m) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Mark getMark() {
+		return mark;
 	}
 
 }

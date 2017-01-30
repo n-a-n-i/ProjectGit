@@ -2,6 +2,9 @@ package project;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
+
+public class Board extends Observable{
 
 /**
  * ConnectFour over a Server project Board
@@ -9,8 +12,6 @@ import java.util.List;
  * @author Nienke Huitink & Lex Favrin
  * @version 2017.01.26
  */
-public class Board {
-
 	private Mark[][][] board;
 	public int dim;
 	public static final int WIN = 4;
@@ -43,11 +44,65 @@ public class Board {
 		}
 	}
 
+	public String toString(){
+		//TODO: zorgen dat hij alles print
+		StringBuilder boardbuilder = new StringBuilder();
+		StringBuilder numbers = new StringBuilder();
+		for (int z = 0; z < dim; z++) {
+			numbers.append("  |");
+			for (int i = 0; i < dim; i++) {
+				if (i == dim - 1) {
+					numbers.append("  " + i + " ");
+				} else {
+					numbers.append("  " + i + "  ");
+				}
+			}
+		}
+		String number = numbers.toString();
+		for (int x = 0; x < dim; x++) {
+			System.out.printf("%d | ", x);
+			for (int z = 0; z < dim; z++) {
+				for (int y = 0; y < dim; y++) {
+					boardbuilder.append("%s  ");
+					boardbuilder.append(board[x][y][z]).toString();
+				}
+				boardbuilder.append("| ");
+			}
+			boardbuilder.append("\n");
+			//String board;
+//			board.format(%s%n, args)
+		}
+
+		StringBuilder layers = new StringBuilder();
+		StringBuilder spaces = new StringBuilder();
+
+		layers.append("  |");
+		for (int i = 0; i < ((dim * 5) - 10) / 2; i++) {
+			spaces.append(" ");
+		}
+		for (int z = 0; z < dim; z++) {
+			if ((dim % 2) == 0) {
+				layers.append(spaces + "  layer " + z + spaces + "  |");
+			} else {
+				layers.append(spaces + "  layer " + z + spaces + "   |");
+			}
+		}
+		String layer = layers.toString();
+		
+		String string = String.format("%s%n%s%n", number, layer);
+		boardbuilder.append(string);
+		String boardString = String.format("%s%n%s%n", boardbuilder);
+		return boardString;
+	}
+	
+	
+
 	/*
 	 * Prints the current status of the board. The layout is initialized as
 	 * well.
 	 */
 	public void showBoard() {
+		System.out.println("showing board via Board");
 		StringBuilder numbers = new StringBuilder();
 		for (int z = 0; z < dim; z++) {
 			numbers.append("  |");
@@ -187,6 +242,7 @@ public class Board {
 	 * the position it gets from that player.
 	 */
 	public void setField(int row, int col, Mark m) {
+		System.out.println("We plaatsen een mark");
 		int z = firstEmptyField(row, col);
 		board[row][col][z] = m;
 

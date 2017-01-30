@@ -1,16 +1,21 @@
 package project;
+
+import server.ClientHandler;
+
 /**
  * ConnectFour over a Server project
  * Board 
  * @author  Nienke Huitink & Lex Favrin, based on original code by Theo Ruys
  * @version 2017.01.26
  */
-public abstract class Player {
+public class Player {
 
 	// -- Instance variables -----------------------------------------
 
 	protected String name;
-	private Mark mark;
+	protected Mark mark;
+	private Game game;
+	private ClientHandler clientHandler;
 
 	// -- Constructors -----------------------------------------------
 
@@ -22,9 +27,9 @@ public abstract class Player {
 	 * Creates a new Player object.
 	 * 
 	 */
-	public Player(String name, Mark mark) {
+	public Player(String name /*, Mark mark */) {
 		this.name = name;
-		this.mark = mark;
+//		this.mark = mark;
 	}
 
 	// -- Queries ----------------------------------------------------
@@ -33,7 +38,7 @@ public abstract class Player {
 	 * Returns the name of the player.
 	 */
 	/* @ pure */ public String getName() {
-		return name;
+		return this.name;
 	}
 
 	/**
@@ -44,37 +49,69 @@ public abstract class Player {
 		return mark;
 	}
 
-	/*
-	 * @ requires board != null & !board.isFull(); ensures
-	 * board.isField(\result) & board.isEmptyField(\result);
-	 * 
-	 */
 	/**
-	 * Determines the field for the next move.
 	 * 
-	 * @param board
-	 *            the current game board
-	 * @return the player's choice
 	 */
-	public abstract int[] determineMove(Board board);
+	public Game getGame() {
+		return game;
+	}
+
+	/**
+	 * 
+	 */
+	public ClientHandler getClientHandler() {
+		return clientHandler;
+	}
 
 	// -- Commands ---------------------------------------------------
 
-	/*
-	 * @ requires board != null & !board.isFull();
-	 */
 	/**
-	 * Makes a move on the board. <br>
+	 * Sets the name of the player.
 	 * 
-	 * @param board
-	 *            the current board
+	 * @param nameArg
+	 *            the name of the player
 	 */
-	public void makeMove(Board board) {
-		int[] move = determineMove(board);
-		int choiceX = move[0];
-		int choiceY = move[1];
-		board.setField(choiceX, choiceY, getMark());
-
+	// @ requires nameArg != null;
+	// @ ensures getName() == nameArg;
+	public void setName(String nameArg) {
+		name = nameArg;
 	}
+
+	/**
+	 * Sets the mark of the player.
+	 * 
+	 * @param markArg
+	 *            the mark of the player
+	 */
+	// @ requires markArg != null;
+	// @ ensures getMark() == markArg;
+	public void setMark(Mark markArg) {
+		mark = markArg;
+	}
+
+	/**
+	 * Sets the game of the player.
+	 * 
+	 * @param gameArg
+	 *            the game of the player
+	 */
+	// @ requires gameArg != null;
+	// @ ensures getGame() == gameArg;
+	public void setGame(Game gameArg) {
+		game = gameArg;
+	}
+
+	/**
+	 * Sets the clientHandler of the player.
+	 * 
+	 * @param handler
+	 *            the clientHandler of the player
+	 */
+	// @ requires handler != null;
+	// @ ensures getClientHandler() == handler;
+	public void setClientHandler(ClientHandler handler) {
+		clientHandler = handler;
+	}
+
 
 }

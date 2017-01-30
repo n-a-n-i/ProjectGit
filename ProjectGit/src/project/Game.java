@@ -3,7 +3,11 @@ package project;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Observable;
 import java.util.Scanner;
+
+
+public class Game /* extends Observable */ {
 
 /**
  * ConnectFour over a Server project Game.
@@ -11,7 +15,7 @@ import java.util.Scanner;
  * @author Nienke Huitink & Lex Favrin
  * @version 2017.01.26
  */
-public class Game {
+
 	// -- Instance variables -----------------------------------------
 
 	public static final int NUMBER_PLAYERS = 2;
@@ -20,9 +24,10 @@ public class Game {
 	 * @ invariant board != null;
 	 */
 	/**
-	 * The board.
+	 * The connect four board.
+	 * @invariant board != null
 	 */
-	Board board;
+	private Board board;
 
 	/*
 	 * @ private invariant players.length == NUMBER_PLAYERS; private invariant
@@ -30,14 +35,18 @@ public class Game {
 	 */
 	/**
 	 * The 2 players of the game.
+	 * @invariant	players.length == 2
+	 * 				players[0] != null
+	 * 				players[1] != null
 	 */
-	private Player[] players;
+	protected Player[] players;
 
 	/*
 	 * @ private invariant 0 <= current && current < NUMBER_PLAYERS;
 	 */
 	/**
 	 * Index of the current player.
+	 * @invariant 0 <= current < NUMBER_PLAYERS
 	 */
 	private int current;
 
@@ -48,67 +57,34 @@ public class Game {
 	 */
 	/**
 	 * Creates a new Game object.
-	 * 
-	 * @param s0
-	 *            the first player
-	 * @param s1
-	 *            the second player
+	 * @param s0 the first player
+	 * @param s1 the second player
+	 * @require s0 != null && s1 != null
 	 */
-	public Game(Player s0, Player s1) {
-		board = new Board(ConnectFour.dim);
-		players = new Player[NUMBER_PLAYERS];
-		players[0] = s0;
-		players[1] = s1;
-		current = 0;
-		System.setIn(new UncloseableInputStream());
+	public Game(Player s0, Player s1, int dim) {
+		this.board = new Board(dim);
+		this.players = new Player[NUMBER_PLAYERS];
+		this.players[0] = s0;
+		this.players[1] = s1;
+		this.current = 0;
 	}
 
 	// -- Commands ---------------------------------------------------
-
 	/**
-	 * Starts the Tic Tac Toe game. <br>
-	 * Asks after each ended game if the user want to continue. Continues until
-	 * the user does not want to play anymore.
+	 * Changes the turn of the Players. 
 	 */
-	public void start() {
-		System.out.println("A game of Connect Four has started");
-		boolean doorgaan = true;
-		while (doorgaan) {
-			reset();
-			play();
-			doorgaan = readBoolean("\n> Play another time? (y/n)?", "y", "n");
-		}
+	public void changePlayer() {
+		current = (current + 1) % 2;
 	}
 
 	/**
-	 * Prints a question which can be answered by yes (true) or no (false).
-	 * After prompting the question on standard out, this method reads a String
-	 * from standard in and compares it to the parameters for yes and no. If the
-	 * user inputs a different value, the prompt is repeated and te method reads
-	 * input again.
-	 * 
-	 * @parom prompt the question to print
-	 * @param yes
-	 *            the String corresponding to a yes answer
-	 * @param no
-	 *            the String corresponding to a no answer
-	 * @return true is the yes answer is typed, false if the no answer is typed
+	 * Returns the board which is played on.
 	 */
-
-	/*
-	 * @ requires prompt, no, yes != null; ensures \result answer.equals(yes);
-	 */
-	private boolean readBoolean(String prompt, String yes, String no) {
-		String answer;
-		do {
-			System.out.print(prompt);
-			try (Scanner in = new Scanner(System.in)) {
-				answer = in.hasNextLine() ? in.nextLine() : null;
-			}
-		} while (answer == null || (!answer.equals(yes) && !answer.equals(no)));
-		return answer.equals(yes);
+	public Board getBoard() {
+		System.out.println("getting board");
+		return this.board;
 	}
-
+	
 	/**
 	 * Resets the game. <br>
 	 * The board is emptied and player[0] becomes the current player.
@@ -118,42 +94,44 @@ public class Game {
 		board.reset();
 	}
 
+	
 	/**
-	 * Plays the Tic Tac Toe game. <br>
-	 * First the (still empty) board is shown. Then the game is played until it
-	 * is over. Players can make a move one after the other. After each move,
-	 * the changed game situation is printed.
+	 * Returns the current Player
 	 */
+
+	public Player getCurrent() {
+		System.out.println("getting players");
+		return this.players[current];
+	}
 	private void play() {
-		update();
+	//	update();
 
 		while (!board.hasWinner() && !board.isFull()) {
-			players[current].makeMove(board);
+	//		players[current].makeMove(board);
 			current = (current + 1) % 2;
-			update();
+	//		update();
 		}
 		printResult();
-	}
 
-	/**
-	 * Prints the game situation.
-	 */
-	private void update() {
-		System.out.println("\ncurrent game situation: \n\n");
-		board.showBoard();
 	}
-
+	
 	/**
-	 * Prints the result of the last game. <br>
+	 * 
+	 * @return
 	 */
+	public void changeCurrent(){
+		current = (current + 1) % NUMBER_PLAYERS;
+	}
+	
 	/*
+	 * 
 	 * @ requires this.board.isFull() || this.board.hasWinner();
 	 */
 	private void printResult() {
 		if (board.isFull()) {
 			System.out.println("Draw, there is no winner.");
 		} else {
-			System.out.println(players[(current + 1) % 2].getName() + 
+			System.out.println(players[(current + 1) % NUMBER_PLAYERS].getName() + 
 					" with mark " + board.lastM + " has won!");
 			System.out.println("The winning move was " + "(" + board.lastMoveX + ", " 
 					+ board.lastMoveY + ", " + board.lastMoveZ + ")");
@@ -163,31 +141,67 @@ public class Game {
 	/**
 	 * Wraps an input stream to prevent it from being closed.
 	 */
-	private static class UncloseableInputStream extends FilterInputStream {
-
-		/**
-		 * Creates a wrapper around {@link System.in}.
-		 */
-		UncloseableInputStream() {
-			this(System.in);
-		}
-
-		/**
-		 * Creates a wrapper around an arbitrary {@link InputStream}.
-		 * 
-		 * @param stream
-		 *            The stream to wrap.
-		 */
-		UncloseableInputStream(InputStream stream) {
-			super(stream);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void close() throws IOException {
-			// Don't do anything
-		}
+	public Player[] getPlayers() {
+		return players;
 	}
+	
+//	public void switchPlayer() {
+//		current = (current + 1) % 2;
+//	}
+//	
+//	/**
+//	 * 
+//	 */
+//	public void move() {
+//		int moveX = getPlayer().getMoveX(this, getPlayer().getMark());
+//		int moveY = getPlayer().getMoveY(this, getPlayer().getMark());
+//		
+//		if (getBoard().isEmptyField(moveX, moveY, getBoard().firstEmptyField(moveX, moveY))){
+//			getBoard().setField(moveX, moveY, getPlayer().getMark());
+//		} else {
+//			// TODO: wrong move exception?
+//		}
+//	}
+//	
+//
+//	
+//
+//	/**
+//	 * Prints the game situation.
+//	 */
+//	private void update() {
+//		System.out.println("\ncurrent game situation: \n\n");
+//		board.showBoard();
+//	}
+//
+//	/**
+//	 * Prints the result of the last game. <br>
+//	 */
+//	/*
+//	 * @ requires this.board.isFull() || this.board.hasWinner();
+//	 */
+//	private void printResult() {
+//		if (board.isFull()) {
+//			System.out.println("Draw, there is no winner.");
+//		} else {
+//			System.out.println("Player with mark " + board.lastM + " has won!");
+//		}
+//	}
+//
+//	
+//	
+//	
+//	/**
+//	 * Starts a game of connect four.
+//	 * Gives the current player a turn to place a mark and switches the player turns.
+//	 */
+//	public void startGame() {
+////		System.out.println("A game of Connect Four has started");
+//		move();
+//		while (!board.isFull() && !!board.hasWinner()) {
+//			changePlayer();
+//			move();
+//		}
+//	}
+//	
 }
