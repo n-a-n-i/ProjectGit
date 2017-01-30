@@ -14,11 +14,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
 
+import project.Game;
 import project.Mark;
+import project.Player;
 import protocol.ProtocolConstants;
 import protocol.ProtocolControl;
 
@@ -80,13 +83,12 @@ public class Server extends Thread implements ProtocolConstants, ProtocolControl
 	public void run() {
 		Socket clientSocket = null;
 		boolean running = true;
+		int id = 100;
 		while (running) {
 			while (true) {
 				try {
-					int id = 100;
-
 					clientSocket = socket.accept();
-					ClientHandler handler = new ClientHandler(this, clientSocket);
+					ClientHandler handler = new ClientHandler(this, clientSocket, id);
 					handler.start();
 					handler.sendMessage(serverCapabilities());
 					addHandler(id, handler);
@@ -199,6 +201,59 @@ public class Server extends Thread implements ProtocolConstants, ProtocolControl
 		// } else {
 		// waitingThreads.add(handler);
 		// }
+	}
+
+	/**
+	 * 
+	 */
+	public void checkMatch(int id, String preferences) {
+		for (Entry<Integer, String> client : clientPreferences.entrySet()) {
+			if (client.getValue().equals(preferences) && client.getKey() != id) {
+				String[] prefs = preferences.split(" ");
+				int dim = Integer.parseInt(prefs[2]);
+				
+				ClientHandler h0 = clients.get(id);
+				ClientHandler h1 = clients.get(client.getKey());
+				// get player names
+				String n0 = h0.getClientName();
+				String n1 = h1.getClientName();
+				// get players
+				Player p0 = new Player(n0);
+				Player p1 = new Player(n1);
+				// set marks
+				p0.setMark(Mark.XXX);
+				p1.setMark(Mark.OOO);
+				// set players in clienthandler
+				h0.setPlayer(p0);
+				h1.setPlayer(p1);
+				// set clienthandler in player
+				p0.setClientHandler(h0);
+				p1.setClientHandler(h1);
+				// set opponent players for both handlers
+				h0.setOpponentPlayerName(n1);
+				h1.setOpponentPlayerName(n0);
+				// start new game
+				Game game = new Game(p0, p1, dim);
+				System.out.println(n0 + " and " + n1 + " start a game.");
+				h0.setGame(game);
+				h1.setGame(game);
+				String startGameMessage = startGame + msgSeperator + n0 + msgSeperator + n1;
+				h0.sendMessage(startGameMessage);
+				h1.sendMessage(startGameMessage);
+
+				// remove clients from waitinglist
+				clientPreferences.remove(id);
+				clientPreferences.remove(client.getKey());
+
+				resetWaitingList();
+				// initialize the list in ClientHandler that contains both
+				// player's
+				// handlers
+				h0.setHandlersOfGame();
+				h1.setHandlersOfGame();
+			}
+		}
+
 	}
 
 	/**

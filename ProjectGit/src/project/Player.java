@@ -8,7 +8,7 @@ import server.ClientHandler;
  * @author  Nienke Huitink & Lex Favrin, based on original code by Theo Ruys
  * @version 2017.01.26
  */
-public abstract class Player {
+public class Player {
 
 	// -- Instance variables -----------------------------------------
 
@@ -27,9 +27,9 @@ public abstract class Player {
 	 * Creates a new Player object.
 	 * 
 	 */
-	public Player(String name, Mark mark) {
+	public Player(String name /*, Mark mark */) {
 		this.name = name;
-		this.mark = mark;
+//		this.mark = mark;
 	}
 
 	// -- Queries ----------------------------------------------------
@@ -113,20 +113,5 @@ public abstract class Player {
 		clientHandler = handler;
 	}
 
-	// /*
-	// * @ requires board != null & !board.isFull(); ensures
-	// * board.isField(\result) & board.isEmptyField(\result);
-	// *
-	// */
-	// /**
-	// * Determines the field for the next move.
-	// *
-	// * @param board
-	// * the current game board
-	// * @return the player's choice
-	// */
-	 public abstract int getMoveX(Game game, Mark m);
-	
-	 public abstract int getMoveY(Game game, Mark m);
 
 }

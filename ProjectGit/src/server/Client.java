@@ -39,6 +39,7 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 	private Board board;
 	private Mark myMark;
 
+	private boolean serverCap;
 	private boolean isCurrentPlayer;
 	private boolean gameIsStarted;
 	private boolean gameIsEnded;
@@ -49,14 +50,16 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 	public String pID;
 	public String colour;
 
+	private String preferences;
 	private int hint;
 	private int myLastMove;
+
 	private int thinkInterval;
 
 	private ClientGame game;
 	private HumanPlayer humanPlayer;
 	private DummyPlayer opponant;
-	
+
 	private static String LINE = "--------------------------------------------------------";
 
 	/**
@@ -114,38 +117,41 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 					shutdown();
 				} catch (NullPointerException ee) {
 					tui.printInput("Please enter a new port number.");
-						ee.printStackTrace();
-						shutdown();
+					ee.printStackTrace();
+					shutdown();
 				}
 			}
 		}
 	});
 
-	//TODO: hier moet hij lezen van de console
+	// TODO: hier moet hij lezen van de console
 	public void readFromConsole(String input) {
 		if (!input.equals("")) {
 			String msg = "";
 			/*
-			 * TODO: als hij van de server capabilities ontvangt moet hij zijn eigen capabilities gaan typen
-			 * Probleem: hier lijst hij wat je typt in de console (input), dus er moet net als gameIsStarted een soort
-			 * boolean komen waaruit deze loop op kan maken dat de capabilities zijn ontvangen en dat die hier getypt moeten worden
+			 * TODO: als hij van de server capabilities ontvangt moet hij zijn
+			 * eigen capabilities gaan typen Probleem: hier lijst hij wat je
+			 * typt in de console (input), dus er moet net als gameIsStarted een
+			 * soort boolean komen waaruit deze loop op kan maken dat de
+			 * capabilities zijn ontvangen en dat die hier getypt moeten worden
 			 */
-			if (input.contains("sendCapabilities")) {
-				sendMessage(input);
-				
+			if (serverCap) {
+				preferences = input;
+				sendMessage(preferences);
+
 			} else if (gameIsStarted) {
 				try {
 					myLastMove = Integer.parseInt(input);
-					if (myLastMove /* a valid move */) {
+					if (myLastMove == 0) {
 						msg = "makeMove" + myLastMove;
 						sendMessage(msg);
 					} else {
 						tui.printInput("Not a valid move.");
 					}
 				} catch (NumberFormatException e) {
-					msg = inputFromConsole;
+					msg = input;
 					if (msg.equals("hint") && isCurrentPlayer) {
-						hint();
+						// hint();
 						tui.printInput("You should play " + Integer.toString(hint));
 					} else if (!isCurrentPlayer) {
 						tui.printInput("Wait for your opponent to make a move.");
@@ -211,6 +217,7 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 		String[] message = msg.split(msgSeperator);
 		switch (message[0]) {
 		case serverCapabilities:
+			serverCap = true;
 			serverCapabilities(message);
 			break;
 		case acceptRequest:
@@ -223,7 +230,7 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 			moveResult(msg);
 			break;
 		case sendBoard:
-//			sendBoard(message);
+			// sendBoard(message);
 			break;
 		case turn:
 			turn(message[1]);
@@ -235,7 +242,7 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 			rematchConfirm();
 			break;
 		case invalidCommand:
-//			error(message[1]);
+			// error(message[1]);
 			break;
 		default:
 			tui.printInput("'" + msg + "' is not processed via the protocol.");
@@ -269,11 +276,11 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 		if (markArg.equals(yellow)) {
 			isCurrentPlayer = true;
 			myMark = Mark.XXX;
-//			clientName = username;
+			// clientName = username;
 			tui.printInput("Your mark is: XXX.");
 			tui.printInput("Now, we just wait for your opponent to show up...");
 		} else {
-//			clientName = username;
+			// clientName = username;
 			myMark = Mark.OOO;
 			tui.printInput("Request accepted!");
 			tui.printInput("Your mark is: OOO.");
@@ -297,7 +304,7 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 		if (isCurrentPlayer) {
 			tui.printInput("You can make the first move.");
 			if (playerType.equals("computer")) {
-//				doComputerMove();
+				// doComputerMove();
 			}
 		} else {
 			tui.printInput("The opponent '" + startingPlayer + "' starts");
@@ -333,31 +340,31 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 		}
 	}
 
-//	/**
-//	 * Adjusts the board to the current state after a move is made.
-//	 * 
-//	 * @param fields
-//	 *            A string array of the board
-//	 */
-//	// @ requires fields != null;
-//	// @ requires fields.length == Board.X * Board.Y;
-//	private void sendBoard(String[] fields) {
-//		tui.printInput(LINE);
-//		// @ loop_invariant i >= 1 && i < Board.X * Board.Y;
-//		for (int i = 1; i < Board.X * Board.Y; i++) {
-//			switch (fields[i]) {
-//			case red:
-//				board.setIndexField(i, Mark.RED);
-//				break;
-//			case yellow:
-//				board.setIndexField(i, Mark.YELLOW);
-//				break;
-//			case empty:
-//				board.setIndexField(i, Mark.EMPTY);
-//			}
-//		}
-//		tui.printInput(board.toString());
-//	}
+	// /**
+	// * Adjusts the board to the current state after a move is made.
+	// *
+	// * @param fields
+	// * A string array of the board
+	// */
+	// // @ requires fields != null;
+	// // @ requires fields.length == Board.X * Board.Y;
+	// private void sendBoard(String[] fields) {
+	// tui.printInput(LINE);
+	// // @ loop_invariant i >= 1 && i < Board.X * Board.Y;
+	// for (int i = 1; i < Board.X * Board.Y; i++) {
+	// switch (fields[i]) {
+	// case red:
+	// board.setIndexField(i, Mark.RED);
+	// break;
+	// case yellow:
+	// board.setIndexField(i, Mark.YELLOW);
+	// break;
+	// case empty:
+	// board.setIndexField(i, Mark.EMPTY);
+	// }
+	// }
+	// tui.printInput(board.toString());
+	// }
 
 	/**
 	 * When the game ended a proper action must be made.
@@ -406,45 +413,47 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 		gameIsStarted = true;
 	}
 
-//	/**
-//	 * Handles several error scenerios. Prints to the TUI.
-//	 * 
-//	 * @param error
-//	 *            the sort of error
-//	 */
-//	// @ requires error != null;
-//	private void error(String error) {
-//		if (error.equals(invalidUserTurn)) {
-//			tui.printError("It is not your turn.");
-//		} else if (error.equals(usernameInUse)) {
-//			tui.printError("The username you entered is already in use by another player.");
-//			tui.printError("Restart the application and enter another username.");
-//			shutdown();
-//		} else if (error.equals(invalidMove)) {
-//			tui.printError("You made an invalid move.");
-//		} else if (error.equals(invalidUsername)) {
-//			tui.printError("Invalid username (a-z, A-Z, 0-9)");
-//		} else if (error.equals(invalidCommand)) {
-//			tui.printError("invalid command");
-//		} else {
-//			tui.printError("Something went wrong!");
-//		}
-//	}
+	// /**
+	// * Handles several error scenerios. Prints to the TUI.
+	// *
+	// * @param error
+	// * the sort of error
+	// */
+	// // @ requires error != null;
+	// private void error(String error) {
+	// if (error.equals(invalidUserTurn)) {
+	// tui.printError("It is not your turn.");
+	// } else if (error.equals(usernameInUse)) {
+	// tui.printError("The username you entered is already in use by another
+	// player.");
+	// tui.printError("Restart the application and enter another username.");
+	// shutdown();
+	// } else if (error.equals(invalidMove)) {
+	// tui.printError("You made an invalid move.");
+	// } else if (error.equals(invalidUsername)) {
+	// tui.printError("Invalid username (a-z, A-Z, 0-9)");
+	// } else if (error.equals(invalidCommand)) {
+	// tui.printError("invalid command");
+	// } else {
+	// tui.printError("Something went wrong!");
+	// }
+	// }
 
-//	/**
-//	 * The hint generator for both players using the smart strategy. It can only
-//	 * be used when it is your turn and when the game has started.
-//	 */
-//	public void hint() {
-//		if (!gameIsStarted) {
-//			tui.printInput("The game has not started yet");
-//		} else if (isCurrentPlayer && gameIsStarted) {
-//			SmartStrategy hintGenerator = new SmartStrategy(myMark);
-//			hint = hintGenerator.determineMove(board, myMark);
-//		} else {
-//			tui.printInput("It is not your turn.");
-//		}
-//	}
+	// /**
+	// * The hint generator for both players using the smart strategy. It can
+	// only
+	// * be used when it is your turn and when the game has started.
+	// */
+	// public void hint() {
+	// if (!gameIsStarted) {
+	// tui.printInput("The game has not started yet");
+	// } else if (isCurrentPlayer && gameIsStarted) {
+	// SmartStrategy hintGenerator = new SmartStrategy(myMark);
+	// hint = hintGenerator.determineMove(board, myMark);
+	// } else {
+	// tui.printInput("It is not your turn.");
+	// }
+	// }
 
 	/**
 	 * It prints out whose turn it is. When the computer is on turn, it calls
@@ -459,27 +468,28 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 		} else {
 			tui.printInput("It's " + username + "'s turn.");
 		}
-//		if (playerType.equals("computer") && isCurrentPlayer) {
-//			doComputerMove();
-//		}
+		// if (playerType.equals("computer") && isCurrentPlayer) {
+		// doComputerMove();
+		// }
 	}
 
-//	/**
-//	 * Generates a move for the computerplayer after several milliseconds which
-//	 * are defined in the TUI by the user.
-//	 */
-//	private void doComputerMove() {
-//		// TODO: SmartStrategy / computerplayer van jou Lex
-//		SmartStrategy strategy = new SmartStrategy(myMark);
-//		int move = strategy.determineMove(board, myMark);
-//		try {
-//			Thread.sleep(thinkInterval);
-//			String msg = doMove + msgSeperator + move;
-//			sendMessage(msg);
-//		} catch (InterruptedException e) {
-//			tui.printInput("The Thread is interrupted.");
-//		}
-//	}
+	// /**
+	// * Generates a move for the computerplayer after several milliseconds
+	// which
+	// * are defined in the TUI by the user.
+	// */
+	// private void doComputerMove() {
+	// // TODO: SmartStrategy / computerplayer van jou Lex
+	// SmartStrategy strategy = new SmartStrategy(myMark);
+	// int move = strategy.determineMove(board, myMark);
+	// try {
+	// Thread.sleep(thinkInterval);
+	// String msg = doMove + msgSeperator + move;
+	// sendMessage(msg);
+	// } catch (InterruptedException e) {
+	// tui.printInput("The Thread is interrupted.");
+	// }
+	// }
 
 	// --- Queries
 	// --------------------------------------------------------------------------------------
@@ -562,7 +572,7 @@ public class Client implements ProtocolConstants, ProtocolControl, Runnable {
 	// @ requires message != null;
 	private boolean messageIsTrue(String message) {
 		if (message.equals("true")) {
-//			board.setField(myLastMoveX, myLastMoveY myMark);
+			// board.setField(myLastMoveX, myLastMoveY myMark);
 		}
 		return message.equals("true");
 	}

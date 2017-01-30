@@ -48,6 +48,8 @@ public interface ProtocolControl {
 	 */
 	String serverCapabilities = "serverCapabilities";
 	
+	String clientPreferences = "sendCapabilities";
+	
 	
 	/**
 	 * Geef een kleur aan de client mits er geen fouten optreden. 

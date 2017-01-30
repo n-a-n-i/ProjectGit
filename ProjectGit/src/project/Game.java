@@ -7,7 +7,7 @@ import java.util.Observable;
 import java.util.Scanner;
 
 
-public class Game extends Observable {
+public class Game /* extends Observable */ {
 
 /**
  * ConnectFour over a Server project Game.

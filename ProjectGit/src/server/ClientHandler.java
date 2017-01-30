@@ -38,14 +38,16 @@ public class ClientHandler extends Thread implements ProtocolConstants, Protocol
 	private Player player;
 	private Game game;
 
-	private String clientName, opponentName;
+	private String clientName, opponentName, preferences;
+	private int pID;
 
 	// -- Constructor
 	// ---------------------------------------------------------------
 
-	public ClientHandler(Server serverArg, Socket sockArg) throws IOException {
+	public ClientHandler(Server serverArg, Socket sockArg, int playerID) throws IOException {
 		this.clientSock = sockArg;
 		this.server = serverArg;
+		this.pID = playerID;
 		in = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(clientSock.getOutputStream()));
 		handlersOfThisGame = new ArrayList<ClientHandler>();
@@ -128,14 +130,17 @@ public class ClientHandler extends Thread implements ProtocolConstants, Protocol
 	private void processProtocol(String msg) {
 		String[] assignment = msg.split(msgSeperator);
 		switch (assignment[0]) {
+		case clientPreferences:
+			addPreferences(msg);
+			server.checkMatch(pID, preferences);
 		case getBoard:
-//			getBoard();
+			// getBoard();
 			break;
 		case joinRequest:
 			joinRequest(assignment[1]);
 			break;
 		case doMove:
-//			doMove(assignment[1]);
+			// doMove(assignment[1]);
 			break;
 		case playerTurn:
 			sendMessage(turn + msgSeperator + getGame().getCurrent().getName());
@@ -146,33 +151,56 @@ public class ClientHandler extends Thread implements ProtocolConstants, Protocol
 		}
 	}
 
-//	/**
-//	 * It creates a String array of the Board according to the protocol. Then it
-//	 * is converted to a normal String, so it could be sent to the Client.
-//	 * 
-//	 * @return a String of a String representation of the Board
-//	 */
-//	private void getBoard() {
-//		String[] sendBoardArray = new String[Board.X * Board.Y + 1];
-//		sendBoardArray[0] = sendBoard;
-//		// @ loop_invariant i >= 1;
-//		// @ loop_invariant i <= Board.X * Board.Y;
-//		for (int i = 1; i < Board.X * Board.Y; i++) {
-//			Mark mark = getGame().getBoard().getField(i);
-//			switch (mark) {
-//			case XXX:
-//				sendBoardArray[i] = xxx;
-//				break;
-//			case OOO:
-//				sendBoardArray[i] = ooo;
-//				break;
-//			case EMPTY:
-//				sendBoardArray[i] = empty;
-//				break;
-//			}
-//		}
-//		sendMessage(arrayToString(sendBoardArray));
-//	}
+	// /**
+	// * It creates a String array of the Board according to the protocol. Then
+	// it
+	// * is converted to a normal String, so it could be sent to the Client.
+	// *
+	// * @return a String of a String representation of the Board
+	// */
+	// private void getBoard() {
+	// String[] sendBoardArray = new String[Board.X * Board.Y + 1];
+	// sendBoardArray[0] = sendBoard;
+	// // @ loop_invariant i >= 1;
+	// // @ loop_invariant i <= Board.X * Board.Y;
+	// for (int i = 1; i < Board.X * Board.Y; i++) {
+	// Mark mark = getGame().getBoard().getField(i);
+	// switch (mark) {
+	// case XXX:
+	// sendBoardArray[i] = xxx;
+	// break;
+	// case OOO:
+	// sendBoardArray[i] = ooo;
+	// break;
+	// case EMPTY:
+	// sendBoardArray[i] = empty;
+	// break;
+	// }
+	// }
+	// sendMessage(arrayToString(sendBoardArray));
+	// }
+
+	/**
+	 * 
+	 */
+	public void addPreferences(String prefs){
+		System.out.println("Komen we hier langs?");
+		 String[] parts = prefs.split(" ");
+		
+		 String clientNames = parts[2];
+		 preferences = parts[1] + " " + parts[3] + " " + parts[4] + " " +
+		 parts[5] + " "
+		 + parts[6] + " " + parts[7] + " " + parts[8];
+		 
+		 if (!server.clientPreferences.containsKey(pID)){
+			 server.clientPreferences.put(pID, preferences);
+			 server.gameNames.put(pID, clientNames);
+			 System.out.println(server.clientPreferences);
+		 } else {
+			 //TODO: cannot add clientpreferences
+		 }
+		
+	}
 
 	/**
 	 * The name is checked by the Server whether the name is already in use and
@@ -194,49 +222,56 @@ public class ClientHandler extends Thread implements ProtocolConstants, Protocol
 		}
 	}
 
-//	/**
-//	 * The method that processes the move of a Client.
-//	 * 
-//	 * @param move
-//	 *            a String representation of the column number
-//	 */
-//	// @ requires move != null;
-//	private void doMove(String move) {
-//		try {
-//			int col = 0;
-//			// parsing the move parameter
-//			col = Integer.parseInt(move);
-//			// declaring the board and mark
-//			Board b = getGame().getBoard();
-//			Mark mark = player.getMark();
-//			// create a prefix
-//			String prefix = moveResult + msgSeperator + col + msgSeperator + clientName + msgSeperator;
-//			// check if the client is the current player and if the move is
-//			// valid
-//			if (isMyPlayerTheCurrentPlayer() && b.isValidMove(col)) {
-//				// the move is set and the board is send to both clientHandlers
-//				b.setField(col, mark);
-//				// Check for a win or draw
-//				if (b.isWinner(mark)) {
-//					server.broadcast(endGame + msgSeperator + clientName + msgSeperator + winner, handlersOfThisGame);
-//				} else if (b.isFull()) {
-//					server.broadcast(endGame + msgSeperator + clientName + msgSeperator + draw, handlersOfThisGame);
-//				} else {
-//					server.broadcast(prefix + "true" + msgSeperator + opponentName, handlersOfThisGame);
-//					getGame().changeCurrent();
-//				}
-//			} else if (!(b.isValidMove(col) && isMyPlayerTheCurrentPlayer())) {
-//				server.broadcast(prefix + "false" + msgSeperator + getGame().getCurrent(), handlersOfThisGame);
-//			} else if (!this.getPlayer().equals(this.getPlayer().getGame().getCurrent())) {
-//				server.broadcast(invalidCommand + msgSeperator + invalidUserTurn + msgSeperator + clientName,
-//						handlersOfThisGame);
-//			}
-//		} catch (NumberFormatException e) {
-//			sendMessage(invalidCommand + msgSeperator + invalidMove);
-//		} catch (ArrayIndexOutOfBoundsException e) {
-//			sendMessage(invalidCommand + msgSeperator + invalidMove);
-//		}
-//	}
+	// /**
+	// * The method that processes the move of a Client.
+	// *
+	// * @param move
+	// * a String representation of the column number
+	// */
+	// // @ requires move != null;
+	// private void doMove(String move) {
+	// try {
+	// int col = 0;
+	// // parsing the move parameter
+	// col = Integer.parseInt(move);
+	// // declaring the board and mark
+	// Board b = getGame().getBoard();
+	// Mark mark = player.getMark();
+	// // create a prefix
+	// String prefix = moveResult + msgSeperator + col + msgSeperator +
+	// clientName + msgSeperator;
+	// // check if the client is the current player and if the move is
+	// // valid
+	// if (isMyPlayerTheCurrentPlayer() && b.isValidMove(col)) {
+	// // the move is set and the board is send to both clientHandlers
+	// b.setField(col, mark);
+	// // Check for a win or draw
+	// if (b.isWinner(mark)) {
+	// server.broadcast(endGame + msgSeperator + clientName + msgSeperator +
+	// winner, handlersOfThisGame);
+	// } else if (b.isFull()) {
+	// server.broadcast(endGame + msgSeperator + clientName + msgSeperator +
+	// draw, handlersOfThisGame);
+	// } else {
+	// server.broadcast(prefix + "true" + msgSeperator + opponentName,
+	// handlersOfThisGame);
+	// getGame().changeCurrent();
+	// }
+	// } else if (!(b.isValidMove(col) && isMyPlayerTheCurrentPlayer())) {
+	// server.broadcast(prefix + "false" + msgSeperator +
+	// getGame().getCurrent(), handlersOfThisGame);
+	// } else if
+	// (!this.getPlayer().equals(this.getPlayer().getGame().getCurrent())) {
+	// server.broadcast(invalidCommand + msgSeperator + invalidUserTurn +
+	// msgSeperator + clientName,
+	// handlersOfThisGame);
+	// }
+	// } catch (NumberFormatException e) {
+	// sendMessage(invalidCommand + msgSeperator + invalidMove);
+	// } catch (ArrayIndexOutOfBoundsException e) {
+	// sendMessage(invalidCommand + msgSeperator + invalidMove);
+	// }
+	// }
 
 	// --- setters -------------------------
 
