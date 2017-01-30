@@ -2,6 +2,12 @@ package project;
 
 import server.ClientHandler;
 
+/**
+ * ConnectFour over a Server project
+ * Board 
+ * @author  Nienke Huitink & Lex Favrin, based on original code by Theo Ruys
+ * @version 2017.01.26
+ */
 public abstract class Player {
 
 	// -- Instance variables -----------------------------------------
@@ -119,8 +125,8 @@ public abstract class Player {
 	// * the current game board
 	// * @return the player's choice
 	// */
-	// public abstract int getMoveX(Game game, Mark m);
-	//
-	// public abstract int getMoveY(Game game, Mark m);
+	 public abstract int getMoveX(Game game, Mark m);
+	
+	 public abstract int getMoveY(Game game, Mark m);
 
 }

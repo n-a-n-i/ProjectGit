@@ -6,7 +6,16 @@ import java.io.InputStream;
 import java.util.Observable;
 import java.util.Scanner;
 
+
 public class Game extends Observable {
+
+/**
+ * ConnectFour over a Server project Game.
+ * 
+ * @author Nienke Huitink & Lex Favrin
+ * @version 2017.01.26
+ */
+
 	// -- Instance variables -----------------------------------------
 
 	public static final int NUMBER_PLAYERS = 2;
@@ -89,9 +98,21 @@ public class Game extends Observable {
 	/**
 	 * Returns the current Player
 	 */
+
 	public Player getCurrent() {
 		System.out.println("getting players");
 		return this.players[current];
+	}
+	private void play() {
+	//	update();
+
+		while (!board.hasWinner() && !board.isFull()) {
+	//		players[current].makeMove(board);
+			current = (current + 1) % 2;
+	//		update();
+		}
+		printResult();
+
 	}
 	
 	/**
@@ -104,6 +125,21 @@ public class Game extends Observable {
 	
 	/*
 	 * 
+	 * @ requires this.board.isFull() || this.board.hasWinner();
+	 */
+	private void printResult() {
+		if (board.isFull()) {
+			System.out.println("Draw, there is no winner.");
+		} else {
+			System.out.println(players[(current + 1) % NUMBER_PLAYERS].getName() + 
+					" with mark " + board.lastM + " has won!");
+			System.out.println("The winning move was " + "(" + board.lastMoveX + ", " 
+					+ board.lastMoveY + ", " + board.lastMoveZ + ")");
+		}
+	}
+
+	/**
+	 * Wraps an input stream to prevent it from being closed.
 	 */
 	public Player[] getPlayers() {
 		return players;

@@ -10,7 +10,7 @@ import server.Client;
 /**
  * Class for maintaining a human player in Tic Tac Toe. Module 2 lab assignment
  * 
- * @author Theo Ruys
+ * @author Theo Ruys, with adaptions from Nienke Huitink & Lex Favrin
  * @version $Revision: 1.4 $
  */
 public class HumanPlayer extends Player {
@@ -31,7 +31,6 @@ public class HumanPlayer extends Player {
 		super(name, mark);
 		this.client = client;
 	}
-
 	// -- Commands ---------------------------------------------------
 
 	/*
@@ -54,10 +53,7 @@ public class HumanPlayer extends Player {
 		
 //		BufferedReader inMove = new BufferedReader(new InputStreamReader(System.in));
 		
-		while (!valid) {
-			
-			
-			
+		while (!valid) {	
 			String promptX = "> " + getName() + " (" + getMark().toString() + ")"
 					+ ", which row do you want to choose? ";
 			client.sendMessage(promptX);
@@ -76,6 +72,16 @@ public class HumanPlayer extends Player {
 				choices[1] = choiceY;
 				break;
 			}
+			//choiceY = readInt(promptY);
+			
+		/*	if (!(0 <= choiceX && choiceX < board.dim) || !(0 <= choiceY && choiceY < board.dim) ||
+					board.firstEmptyField(choiceX, choiceY) == -1) {
+				System.out.println("ERROR: field " + choiceX + ", " + choiceY + " is no valid choice.");
+			} else {
+				choices[0] = choiceX;
+				choices[1] = choiceY;
+				valid = true;
+			}*/
 			
 //			try {
 //				String promptX = "> " + getName() + " (" + getMark().toString() + ")"
@@ -113,8 +119,8 @@ public class HumanPlayer extends Player {
 	 * @return the first int value which is entered by the user
 	 */
 	/*
-	 * @ requires prompt != null; ensures \result >= 0; 
-	 * ensures \result < board.dim;
+	 * @ requires prompt != null; ensures \result >= 0; ensures \result <
+	 * board.dim;
 	 */
 	private int readInt(String prompt) {
 		int value = 0;
